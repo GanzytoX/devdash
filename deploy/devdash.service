@@ -18,4 +18,3 @@ ReadWritePaths=/opt/devdash/backend/prisma
 
 [Install]
 WantedBy=multi-user.target
-

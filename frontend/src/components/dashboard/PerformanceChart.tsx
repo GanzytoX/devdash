@@ -14,7 +14,7 @@ export const PerformanceChart: React.FC = () => {
     const pointsCount = 24;
     const data = Array.from({ length: pointsCount }, (_, index) => {
       const item: any = { name: `T-${pointsCount - 1 - index}` };
-      
+
       // Inject each service's latency at this index
       services.forEach(s => {
         if (s.paused) return;
@@ -23,7 +23,7 @@ export const PerformanceChart: React.FC = () => {
         // set value (omit offline 0s for cleaner chart metrics)
         item[s.name] = s.status === 'offline' ? null : historyValue;
       });
-      
+
       return item;
     });
     return data;
@@ -105,15 +105,15 @@ export const PerformanceChart: React.FC = () => {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.04)" vertical={false} />
-              <XAxis 
-                dataKey="name" 
-                stroke="rgba(255, 255, 255, 0.3)" 
+              <XAxis
+                dataKey="name"
+                stroke="rgba(255, 255, 255, 0.3)"
                 tickLine={false}
                 axisLine={false}
                 dy={10}
               />
-              <YAxis 
-                stroke="rgba(255, 255, 255, 0.3)" 
+              <YAxis
+                stroke="rgba(255, 255, 255, 0.3)"
                 tickLine={false}
                 axisLine={false}
                 dx={-5}

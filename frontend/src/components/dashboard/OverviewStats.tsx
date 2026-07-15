@@ -9,7 +9,7 @@ export const OverviewStats: React.FC = () => {
   // Calculations
   const totalServices = services.length;
   const activeServices = services.filter(s => s.status === 'online' || s.status === 'degraded').length;
-  
+
   // Calculate average uptime across active history
   const averageUptime = React.useMemo(() => {
     if (totalServices === 0) return 100;
@@ -87,7 +87,7 @@ export const OverviewStats: React.FC = () => {
           >
             {/* Ambient Background Gradient for Hover */}
             <div className="absolute -right-10 -bottom-10 h-32 w-32 rounded-full bg-brand-blue-500/5 blur-3xl group-hover:bg-brand-blue-500/10 transition-colors duration-300" />
-            
+
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs font-mono tracking-wider text-slate-400 uppercase">
                 {stat.title}

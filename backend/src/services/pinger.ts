@@ -38,7 +38,7 @@ export async function pingService(url: string, method: string): Promise<PingResu
     if (!isSuccess) {
       return { status: 'offline', latency: duration };
     }
-    
+
     // Si la latencia es extremadamente alta (> 1000ms), reporta "degraded"
     if (duration > 1000) {
       return { status: 'degraded', latency: duration };

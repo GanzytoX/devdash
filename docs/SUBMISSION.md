@@ -24,4 +24,3 @@
 - [ ] Confirm Slack/Discord delivery.
 - [ ] Download and verify the latest SQLite backup.
 - [ ] Tag the submitted commit and avoid feature changes afterward.
-

@@ -11,4 +11,3 @@
 9. Close with the one-VPS architecture, SQLite persistence and public repository.
 
 Keep a prerecorded version of the same flow as a network-failure fallback.
-

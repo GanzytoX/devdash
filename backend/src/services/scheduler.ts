@@ -39,7 +39,7 @@ export class PingerScheduler {
     this.unschedule(service.id);
 
     console.log(`Programando monitoreo para: ${service.name} cada ${service.interval}s`);
-    
+
     // Ejecutar chequeo inicial inmediato en segundo plano
     this.runCheck(service.id).catch(err => {
       console.error(`Error en chequeo inicial de ${service.name}:`, err);

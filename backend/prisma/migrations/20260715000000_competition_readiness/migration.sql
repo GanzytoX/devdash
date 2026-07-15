@@ -17,4 +17,3 @@ CREATE INDEX "PingResult_serviceId_timestamp_idx" ON "PingResult"("serviceId", "
 CREATE INDEX "LogEntry_createdAt_idx" ON "LogEntry"("createdAt");
 CREATE INDEX "Incident_serviceId_startedAt_idx" ON "Incident"("serviceId", "startedAt");
 CREATE INDEX "Incident_status_startedAt_idx" ON "Incident"("status", "startedAt");
-

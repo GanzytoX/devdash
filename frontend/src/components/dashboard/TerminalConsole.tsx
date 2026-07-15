@@ -170,7 +170,7 @@ export const TerminalConsole: React.FC = () => {
       </div>
 
       {/* Terminal View Body */}
-      <div 
+      <div
         className="flex-1 overflow-y-auto p-6 font-mono text-xs space-y-1.5 bg-slate-950/40 relative"
         onClick={() => inputRef.current?.focus()}
       >
@@ -193,10 +193,10 @@ export const TerminalConsole: React.FC = () => {
           <div
             key={idx}
             className={`leading-relaxed ${
-              line.type === 'input' 
-                ? 'text-slate-100 font-bold' 
-                : line.type === 'error' 
-                ? 'text-red-400' 
+              line.type === 'input'
+                ? 'text-slate-100 font-bold'
+                : line.type === 'error'
+                ? 'text-red-400'
                 : line.type === 'success'
                 ? 'text-emerald-400'
                 : line.type === 'warn'
@@ -207,7 +207,7 @@ export const TerminalConsole: React.FC = () => {
             {line.text}
           </div>
         ))}
-        
+
         <div ref={outputEndRef} />
       </div>
 

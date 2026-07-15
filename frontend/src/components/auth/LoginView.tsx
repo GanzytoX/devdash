@@ -49,7 +49,7 @@ export const LoginView: React.FC = () => {
         {/* Login Card */}
         <div className="glass-panel border border-white/5 rounded-2xl p-8 bg-slate-950/40 relative">
           <form onSubmit={handleSubmit} className="space-y-6">
-            
+
             {/* Username Input */}
             <div className="space-y-2">
               <label className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400">

@@ -10,7 +10,7 @@
   --color-glass-card-hover: rgba(20, 30, 54, 0.6);
   --color-glass-border: rgba(255, 255, 255, 0.08);
   --color-glass-border-hover: rgba(255, 255, 255, 0.15);
-  
+
   --color-brand-blue-100: #e5f3ff;
   --color-brand-blue-200: #cde2ff;
   --color-brand-blue-300: #9ac2ff;
@@ -25,7 +25,7 @@
   --color-electric-emerald: #10b981;
   --color-neon-crimson: #ef4444;
   --color-amber-led: #f59e0b;
-  
+
   --animate-radar: radar-pulse 2s infinite ease-in-out;
   --animate-scanline: scanline 8s linear infinite;
   --animate-blink: blink 1s step-end infinite;

@@ -25,7 +25,7 @@ model Service {
   lastChecked    String?      // Time of last check
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
-  
+
   pingResults    PingResult[] // Latency and availability history records
   logs           LogEntry[]   // Linked system event logs
   incidents      Incident[]
@@ -38,7 +38,7 @@ model PingResult {
   timestamp   DateTime @default(now())
   latency     Int
   status      String   // online, offline, degraded
-  
+
   service     Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 
   @@index([serviceId, timestamp])
@@ -53,7 +53,7 @@ model LogEntry {
   serviceId   String?
   serviceName String?
   createdAt   DateTime @default(now())
-  
+
   service     Service? @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 
   @@index([createdAt])

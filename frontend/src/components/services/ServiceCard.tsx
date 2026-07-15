@@ -24,11 +24,11 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service, onEdit }) => 
   const renderSparkline = () => {
     const history = service.latencyHistory || [];
     if (history.length < 2) return null;
-    
+
     const width = 120;
     const height = 24;
     const padding = 2;
-    
+
     // Filter history to ignore 0 (offline)
     const validHistory = history.filter(h => h > 0);
     const minVal = validHistory.length ? Math.min(...validHistory) : 0;
@@ -43,10 +43,10 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service, onEdit }) => 
       return `${x},${y}`;
     }).join(' ');
 
-    const strokeColor = service.status === 'offline' 
-      ? '#EF4444' 
-      : service.status === 'degraded' 
-      ? '#F59E0B' 
+    const strokeColor = service.status === 'offline'
+      ? '#EF4444'
+      : service.status === 'degraded'
+      ? '#F59E0B'
       : '#10B981';
 
     return (

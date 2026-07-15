@@ -119,7 +119,7 @@ export const ServiceFormModal: React.FC<ServiceFormModalProps> = ({
 
       {/* Modal card container */}
       <div role="dialog" aria-modal="true" aria-labelledby="service-modal-title" className="relative w-full max-w-lg glass-panel rounded-2xl border border-white/10 shadow-2xl overflow-hidden animate-fade-in bg-slate-900/90">
-        
+
         {/* Header */}
         <div className="px-6 py-4 border-b border-white/5 bg-slate-950/40 flex items-center justify-between">
           <h3 id="service-modal-title" className="text-sm font-semibold text-slate-100 font-sans tracking-tight">
@@ -136,7 +136,7 @@ export const ServiceFormModal: React.FC<ServiceFormModalProps> = ({
 
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          
+
           {/* Name Field */}
           <div>
             <label htmlFor="service-name" className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">
@@ -180,7 +180,7 @@ export const ServiceFormModal: React.FC<ServiceFormModalProps> = ({
 
           {/* Configuration Grid */}
           <div className="grid grid-cols-2 gap-4">
-            
+
             {/* Method Select */}
             <div>
               <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">
