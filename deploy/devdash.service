@@ -1,0 +1,21 @@
+[Unit]
+Description=DevDash uptime monitoring backend
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=devdash
+WorkingDirectory=/opt/devdash/backend
+EnvironmentFile=/opt/devdash/backend/.env
+ExecStart=/usr/bin/node /opt/devdash/backend/dist/server.js
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/opt/devdash/backend/prisma
+
+[Install]
+WantedBy=multi-user.target
+
