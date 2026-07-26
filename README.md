@@ -3,7 +3,7 @@
 [![Hosted on CubePath](https://img.shields.io/badge/Hosted%20on-CubePath-00C853?style=flat-square&logo=cloud&logoColor=white)](https://cubepath.com)
 [![Cubethon 2026 Q3](https://img.shields.io/badge/Cubethon-2026%20Q3-2563EB?style=flat-square&logo=trophy&logoColor=white)](https://github.com/CubePathInc/cubethon-2026-Q3)
 [![Self-hosted](https://img.shields.io/badge/100%25-Self--hosted-7C3AED?style=flat-square&logo=docker&logoColor=white)](#-despliegue)
-[![License](https://img.shields.io/badge/License-MIT-334155?style=flat-square)](LICENSE)
+[![License](https://img.shields.io/badge/License-MIT-334155?style=flat-square)](deploy/LICENSE)
 
 DevDash es una plataforma self-hosted para monitorear disponibilidad, latencia,
 certificados SSL, incidentes y recursos de infraestructura desde una interfaz
@@ -142,13 +142,13 @@ DevDash responde a los criterios del concurso:
 - **Presentación:** panel visual, terminal e historial de incidentes.
 - **CubePath:** monitoreo continuo y persistencia dentro de un VPS de CubePath.
 
-Consulta el [guion de demostración](docs/DEMO_SCRIPT.md) y la
-[lista de entrega](docs/SUBMISSION.md).
+Consulta el [guion de demostración](deploy/docs/DEMO_SCRIPT.md) y la
+[lista de entrega](deploy/docs/SUBMISSION.md).
 
 ## 📄 Licencia
 
 Creado por [GonzaDev](https://github.com/GanzytoX) para **Cubethon 2026 Q3** y
-distribuido bajo la [licencia MIT](LICENSE).
+distribuido bajo la [licencia MIT](deploy/LICENSE).
 
 ---
 
