@@ -74,16 +74,29 @@ const AuthenticatedApp: React.FC = () => {
                 </div>
 
                 <div className="flex-1 overflow-y-auto space-y-4 pr-1 text-xs">
-                  {services.map(s => {
+                  {services.length === 0 ? (
+                    <div className="h-full flex items-center justify-center text-center text-slate-500 px-6">
+                      Añade un servicio para visualizar su diagnóstico de red.
+                    </div>
+                  ) : services.map(s => {
                     const effectiveStatus = s.paused ? 'paused' : s.status;
                     // Weighting: 60% current instant status + 40% historical uptime consistency (last 30 checks)
-                    const currentWeight = s.status === 'offline' ? 0 : s.status === 'degraded' ? 80 : 100;
+                    const currentWeight = s.status === 'offline'
+                      ? 0
+                      : s.status === 'degraded'
+                        ? 80
+                        : s.status === 'online'
+                          ? 100
+                          : null;
                     const successfulChecks = s.uptimeHistory.filter(Boolean).length;
                     const historyUptimeRatio = s.uptimeHistory.length > 0
                       ? (successfulChecks / s.uptimeHistory.length) * 100
-                      : 100;
-
-                    const healthPercent = Math.round(currentWeight * 0.6 + historyUptimeRatio * 0.4);
+                      : null;
+                    const healthPercent = historyUptimeRatio === null
+                      ? null
+                      : s.paused || currentWeight === null
+                        ? Math.round(historyUptimeRatio)
+                        : Math.round(currentWeight * 0.6 + historyUptimeRatio * 0.4);
 
                     return (
                       <div key={s.id} className="p-3 rounded-xl bg-white/5 border border-white/5 flex flex-col gap-2">
@@ -96,6 +109,8 @@ const AuthenticatedApp: React.FC = () => {
                               ? 'text-emerald-400'
                               : effectiveStatus === 'degraded'
                               ? 'text-amber-400'
+                              : effectiveStatus === 'unknown'
+                              ? 'text-slate-400'
                               : 'text-red-400'
                           }`}>
                             {effectiveStatus === 'paused'
@@ -104,6 +119,8 @@ const AuthenticatedApp: React.FC = () => {
                                 ? 'EN LÍNEA'
                                 : effectiveStatus === 'degraded'
                                   ? 'DEGRADADO'
+                                  : effectiveStatus === 'unknown'
+                                    ? 'PENDIENTE'
                                   : 'CAÍDO'}
                           </span>
                         </div>
@@ -111,13 +128,19 @@ const AuthenticatedApp: React.FC = () => {
                         {/* Custom progress indicators */}
                         <div className="space-y-1">
                           <div className="flex justify-between text-[9px] font-mono text-slate-400">
-                            <span>{s.paused ? 'Última puntuación:' : 'Puntuación de salud:'}</span>
-                            <span>{healthPercent}%</span>
+                            <span>
+                              {healthPercent === null
+                                ? 'Verificaciones:'
+                                : s.paused
+                                  ? 'Última puntuación:'
+                                  : 'Puntuación de salud:'}
+                            </span>
+                            <span>{healthPercent === null ? 'Sin datos' : `${healthPercent}%`}</span>
                           </div>
                           <div className="w-full bg-slate-950/60 rounded-full h-1.5 overflow-hidden">
                             <div
                               className={`h-full rounded-full transition-all duration-500 ${
-                                s.paused
+                                healthPercent === null || s.paused
                                   ? 'bg-slate-500'
                                   : healthPercent >= 90
                                   ? 'bg-emerald-500'
@@ -125,7 +148,7 @@ const AuthenticatedApp: React.FC = () => {
                                   ? 'bg-amber-500'
                                   : 'bg-red-500'
                               }`}
-                              style={{ width: `${healthPercent}%` }}
+                              style={{ width: `${healthPercent ?? 0}%` }}
                             />
                           </div>
                         </div>
@@ -153,21 +176,25 @@ const AuthenticatedApp: React.FC = () => {
 
       case 'analytics': {
         // Dynamically computed real statistics
-        const allUptimeChecks = services.flatMap(s => s.uptimeHistory);
+        const allUptimeChecks = services
+          .filter(service => !service.paused)
+          .flatMap(service => service.uptimeHistory);
         const totalUptimeChecks = allUptimeChecks.length;
         const successfulUptimeChecks = allUptimeChecks.filter(Boolean).length;
         const realAvgUptime = totalUptimeChecks > 0
           ? ((successfulUptimeChecks / totalUptimeChecks) * 100).toFixed(2) + '%'
-          : '100.00%';
+          : '--';
 
         // Count of real outages from the persisted log history
-        const realCaidasCount = incidents.length;
+        const realCaidasCount = services.length === 0
+          ? '--'
+          : `${incidents.length} ${incidents.length === 1 ? 'Caída' : 'Caídas'}`;
 
         // Real aggregate latency average of all active services
         const activeServicesList = services.filter(s => s.status !== 'offline' && !s.paused && s.latency > 0);
         const realAvgLatency = activeServicesList.length > 0
           ? (activeServicesList.reduce((sum, s) => sum + s.latency, 0) / activeServicesList.length).toFixed(1) + ' ms'
-          : '-- ms';
+          : '--';
 
         return (
           <div className="space-y-8 animate-fade-in">
@@ -179,7 +206,13 @@ const AuthenticatedApp: React.FC = () => {
                 </div>
                 <div>
                   <h4 className="text-xl font-bold font-mono text-white">{realAvgUptime}</h4>
-                  <p className="text-[10px] text-slate-400 uppercase tracking-wider font-mono">Disponibilidad · últimas 30 verificaciones</p>
+                  <p className="text-[10px] text-slate-400 uppercase tracking-wider font-mono">
+                    {services.length === 0
+                      ? 'Sin servicios registrados'
+                      : totalUptimeChecks === 0
+                        ? 'Sin verificaciones disponibles'
+                        : 'Disponibilidad · últimas 30 verificaciones'}
+                  </p>
                 </div>
               </div>
               <div className="glass-panel p-6 rounded-2xl flex items-center gap-4">
@@ -187,8 +220,10 @@ const AuthenticatedApp: React.FC = () => {
                   <CheckCircle2 className="h-6 w-6" />
                 </div>
                 <div>
-                  <h4 className="text-xl font-bold font-mono text-white">{realCaidasCount} {realCaidasCount === 1 ? 'Caída' : 'Caídas'}</h4>
-                  <p className="text-[10px] text-slate-400 uppercase tracking-wider font-mono">Incidentes · 7 días</p>
+                  <h4 className="text-xl font-bold font-mono text-white">{realCaidasCount}</h4>
+                  <p className="text-[10px] text-slate-400 uppercase tracking-wider font-mono">
+                    {services.length === 0 ? 'Sin servicios registrados' : 'Incidentes · 7 días'}
+                  </p>
                 </div>
               </div>
               <div className="glass-panel p-6 rounded-2xl flex items-center gap-4">
@@ -197,7 +232,13 @@ const AuthenticatedApp: React.FC = () => {
                 </div>
                 <div>
                   <h4 className="text-xl font-bold font-mono text-white">{realAvgLatency}</h4>
-                  <p className="text-[10px] text-slate-400 uppercase tracking-wider font-mono">Latencia Agregada</p>
+                  <p className="text-[10px] text-slate-400 uppercase tracking-wider font-mono">
+                    {services.length === 0
+                      ? 'Sin servicios registrados'
+                      : activeServicesList.length === 0
+                        ? 'Sin mediciones disponibles'
+                        : 'Latencia agregada'}
+                  </p>
                 </div>
               </div>
             </div>
@@ -226,7 +267,13 @@ const AuthenticatedApp: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-white/5 font-mono text-slate-200">
-                    {services.map(s => {
+                    {services.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} className="p-8 text-center text-slate-500 font-sans">
+                          Añade un servicio para generar métricas de latencia.
+                        </td>
+                      </tr>
+                    ) : services.map(s => {
                       const history = s.latencyHistory.filter(l => l > 0);
                       const avg = history.length > 0 ? Math.round(history.reduce((a, b) => a + b, 0) / history.length) : 0;
 
@@ -252,7 +299,13 @@ const AuthenticatedApp: React.FC = () => {
                         <tr key={s.id} className="hover:bg-white/5 transition-colors">
                           <td className="p-4 font-sans font-bold flex items-center gap-2">
                             <span className={`h-2 w-2 rounded-full ${
-                              s.status === 'online' ? 'bg-emerald-500' : s.status === 'degraded' ? 'bg-amber-500' : 'bg-red-500'
+                              s.paused || s.status === 'unknown'
+                                ? 'bg-slate-500'
+                                : s.status === 'online'
+                                  ? 'bg-emerald-500'
+                                  : s.status === 'degraded'
+                                    ? 'bg-amber-500'
+                                    : 'bg-red-500'
                             }`} />
                             {s.name}
                           </td>

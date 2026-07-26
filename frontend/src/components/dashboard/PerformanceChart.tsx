@@ -22,21 +22,29 @@ interface ChartTooltipProps {
 export const PerformanceChart: React.FC = () => {
   const { services } = useServices();
 
+  const chartServices = React.useMemo(
+    () => services.filter(
+      service => !service.paused
+        && service.status !== 'offline'
+        && (service.latency > 0 || service.latencyHistory.some(value => value > 0))
+    ).slice(0, 4),
+    [services]
+  );
+
   const chartData = React.useMemo(() => {
     const pointsCount = 24;
     const data = Array.from({ length: pointsCount }, (_, index) => {
       const item: ChartPoint = { name: `T-${pointsCount - 1 - index}` };
 
-      services.forEach(s => {
-        if (s.paused) return;
+      chartServices.forEach(s => {
         const historyValue = s.latencyHistory[index] ?? s.latency;
-        item[s.name] = s.status === 'offline' ? null : historyValue;
+        item[s.name] = historyValue > 0 ? historyValue : null;
       });
 
       return item;
     });
     return data;
-  }, [services]);
+  }, [chartServices]);
 
   const serviceColors = [
     { stroke: '#1d72fe', fill: 'url(#colorBrandBlue650)' },
@@ -45,7 +53,14 @@ export const PerformanceChart: React.FC = () => {
     { stroke: '#3884fe', fill: 'url(#colorBrandBlue500)' },
   ];
 
-  const activeServices = services.filter(s => !s.paused).slice(0, 4);
+  const activeServices = services.filter(s => !s.paused);
+  const emptyMessage = services.length === 0
+    ? 'No hay servicios registrados para mostrar métricas.'
+    : activeServices.length === 0
+      ? 'Todos los servicios están pausados.'
+      : chartServices.length === 0
+        ? 'Todavía no hay mediciones de latencia disponibles.'
+        : null;
 
   const CustomTooltip = ({ active, payload, label }: ChartTooltipProps) => {
     if (active && payload && payload.length) {
@@ -83,9 +98,9 @@ export const PerformanceChart: React.FC = () => {
       </div>
 
       <div className="flex-1 w-full text-xs font-mono">
-        {activeServices.length === 0 ? (
+        {emptyMessage ? (
           <div className="h-full flex items-center justify-center text-slate-500">
-            No hay servicios activos registrados para mostrar métricas.
+            {emptyMessage}
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
@@ -126,7 +141,7 @@ export const PerformanceChart: React.FC = () => {
                 dx={-5}
               />
               <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(255, 255, 255, 0.08)', strokeWidth: 1 }} />
-              {activeServices.map((service, idx) => {
+              {chartServices.map((service, idx) => {
                 const colorConfig = serviceColors[idx % serviceColors.length];
                 return (
                   <Area

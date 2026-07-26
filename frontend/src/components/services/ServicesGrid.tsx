@@ -67,8 +67,14 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({ onAddClick, onEditCl
       {/* Services Cards Grid Layout */}
       {filteredServices.length === 0 ? (
         <div className="glass-panel rounded-2xl p-16 text-center border border-white/5">
-          <p className="text-sm text-slate-400 mb-2 font-sans">No se encontraron servicios</p>
-          <p className="text-xs text-slate-500 font-sans">Prueba otro filtro de estado o crea un servicio nuevo.</p>
+          <p className="text-sm text-slate-300 mb-2 font-sans">
+            {services.length === 0 ? 'Aún no hay servicios registrados' : 'No hay servicios con este estado'}
+          </p>
+          <p className="text-xs text-slate-500 font-sans">
+            {services.length === 0
+              ? 'Añade tu primer servicio para comenzar a monitorear su disponibilidad.'
+              : 'Selecciona otro filtro para consultar los servicios disponibles.'}
+          </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

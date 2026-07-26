@@ -114,7 +114,12 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service, onEdit }) => 
     }
 
     if (service.sslExpiryDays === null) {
-      return null;
+      return (
+        <div className="flex items-center gap-1.5 text-slate-400 font-mono text-[10px]" title="No hay datos del certificado">
+          <ShieldAlert className="h-3.5 w-3.5" />
+          <span>SSL: N/D</span>
+        </div>
+      );
     }
 
     return (
@@ -124,6 +129,8 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service, onEdit }) => 
       </div>
     );
   };
+
+  const sparkline = renderSparkline();
 
   return (
     <GlassCard hoverEffect={true} className="flex flex-col relative h-full">
@@ -163,15 +170,19 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service, onEdit }) => 
         <div>
           <div className="text-[10px] font-mono text-slate-400 uppercase tracking-wider">Latencia</div>
           <div className="text-xl font-bold font-mono text-white mt-0.5">
-            {service.status === 'offline' || service.paused ? '--' : `${service.latency}ms`}
+            {service.status === 'offline' || service.status === 'unknown' || service.paused || service.latency <= 0
+              ? '--'
+              : `${service.latency}ms`}
           </div>
         </div>
         <div className="flex flex-col items-end">
           <div className="text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-1">Tendencia</div>
           {service.paused ? (
             <span className="text-[10px] font-mono text-slate-500 py-1.5">Monitoreo pausado</span>
+          ) : sparkline ? (
+            sparkline
           ) : (
-            renderSparkline()
+            <span className="text-[10px] font-mono text-slate-500 py-1.5">Sin datos</span>
           )}
         </div>
       </div>
@@ -182,8 +193,13 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service, onEdit }) => 
           <span>Disponibilidad (Últimos 30)</span>
           <span>{service.paused || service.uptimeHistory.length === 0 ? '--' : `${((service.uptimeHistory.filter(Boolean).length / service.uptimeHistory.length) * 100).toFixed(1)}%`}</span>
         </div>
-        <div className="flex gap-[2px] w-full justify-between">
-          {service.uptimeHistory.map((val, idx) => (
+        {service.uptimeHistory.length === 0 ? (
+          <div className="h-4 rounded-sm bg-slate-800/40 flex items-center justify-center text-[8px] font-mono text-slate-600">
+            Sin verificaciones
+          </div>
+        ) : (
+          <div className="flex gap-[2px] w-full justify-between">
+            {service.uptimeHistory.map((val, idx) => (
             <div
               key={idx}
               className={`h-4 flex-1 rounded-sm ${
@@ -197,8 +213,9 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service, onEdit }) => 
               } transition-colors duration-150`}
               title={`Verificación ${idx + 1}: ${service.paused ? 'Pausado' : val ? 'Correcto' : 'Error / Caído'}`}
             />
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Bottom controls / metadata */}

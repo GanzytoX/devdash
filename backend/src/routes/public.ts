@@ -49,7 +49,7 @@ router.get('/api/public/status', asyncHandler(async (req, res) => {
       history: results.slice(-60).map(p => ({ timestamp: p.timestamp, status: p.status, latency: p.latency })),
     };
   });
-  const operational = mapped.every(s => s.status === 'online' || s.status === 'paused');
+  const operational = mapped.length > 0 && mapped.every(s => s.status === 'online');
   res.json({ instance: config.instanceName, region: config.instanceRegion, hostedOn: 'CubePath', period, operational, updatedAt: new Date().toISOString(), services: mapped, incidents });
 }));
 

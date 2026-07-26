@@ -92,9 +92,13 @@ export const TerminalConsole: React.FC = () => {
       case 'services':
         addConsoleLine('Lista de Servicios Registrados:', 'info');
         addConsoleLine('------------------------------------------------------------', 'info');
+        if (services.length === 0) {
+          addConsoleLine('No hay servicios registrados. Añade uno desde la sección Servicios.', 'info');
+          break;
+        }
         services.forEach(s => {
-          const statusChar = s.paused ? '⏸️' : s.status === 'online' ? '🟢' : s.status === 'degraded' ? '⚠️' : '🔴';
-          const latencyStr = s.status === 'offline' ? 'N/D' : `${s.latency}ms`;
+          const statusChar = s.paused ? '⏸️' : s.status === 'online' ? '🟢' : s.status === 'degraded' ? '⚠️' : s.status === 'unknown' ? '⚪' : '🔴';
+          const latencyStr = s.paused || s.status === 'offline' || s.status === 'unknown' || s.latency <= 0 ? 'N/D' : `${s.latency}ms`;
           const sslStr = sslStatusLabel(s.sslStatus);
           addConsoleLine(`[${s.id}] ${statusChar} ${s.name.padEnd(28)} | Ping: ${latencyStr.padEnd(6)} | SSL: ${sslStr}`, 'info');
         });

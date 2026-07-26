@@ -1,7 +1,7 @@
 import React from 'react';
 import { useServices } from '../../hooks/useServices';
 import { GlassCard } from '../common/GlassCard';
-import { Activity, Server, Clock, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { Activity, Server, Clock, AlertTriangle, ShieldCheck, ShieldQuestion } from 'lucide-react';
 
 export const OverviewStats: React.FC = () => {
   const { services } = useServices();
@@ -13,8 +13,7 @@ export const OverviewStats: React.FC = () => {
   ).length;
 
   // Calculate average uptime across active history
-  const averageUptime = React.useMemo(() => {
-    if (totalServices === 0) return 100;
+  const averageUptime = React.useMemo<number | null>(() => {
     let totalChecks = 0;
     let successfulChecks = 0;
 
@@ -26,30 +25,99 @@ export const OverviewStats: React.FC = () => {
       });
     });
 
-    return totalChecks > 0 ? (successfulChecks / totalChecks) * 100 : 100;
-  }, [services, totalServices]);
+    return totalChecks > 0 ? (successfulChecks / totalChecks) * 100 : null;
+  }, [services]);
 
   // Calculate average latency
-  const avgLatency = React.useMemo(() => {
-    const activePings = services.filter(s => !s.paused && (s.status === 'online' || s.status === 'degraded'));
-    if (activePings.length === 0) return 0;
+  const avgLatency = React.useMemo<number | null>(() => {
+    const activePings = services.filter(
+      s => !s.paused
+        && (s.status === 'online' || s.status === 'degraded')
+        && s.latency > 0
+    );
+    if (activePings.length === 0) return null;
     const sum = activePings.reduce((acc, s) => acc + s.latency, 0);
     return Math.round(sum / activePings.length);
   }, [services]);
 
-  // Calculate SSL Alerts
-  const sslAlertsCount = services.filter(
-    s => !s.paused && (s.sslStatus === 'expiring' || s.sslStatus === 'expired')
+  const monitoredServices = services.filter(s => !s.paused);
+  const sslAlertsCount = monitoredServices.filter(
+    s => s.sslStatus === 'expiring'
+      || s.sslStatus === 'expired'
+      || s.sslStatus === 'invalid'
   ).length;
+  const pendingSslCount = monitoredServices.filter(s => s.sslStatus === 'unknown').length;
+  const certificateCount = monitoredServices.filter(s => s.sslStatus !== 'none').length;
+
+  const sslSummary = (() => {
+    if (totalServices === 0) {
+      return {
+        value: '--',
+        desc: 'Sin servicios registrados',
+        icon: ShieldQuestion,
+        color: 'text-slate-400',
+        bgGlow: 'group-hover:shadow-slate-500/5',
+      };
+    }
+    if (monitoredServices.length === 0) {
+      return {
+        value: '--',
+        desc: 'Todos los servicios están pausados',
+        icon: ShieldQuestion,
+        color: 'text-slate-400',
+        bgGlow: 'group-hover:shadow-slate-500/5',
+      };
+    }
+    if (sslAlertsCount > 0) {
+      return {
+        value: `${sslAlertsCount} ${sslAlertsCount === 1 ? 'Alerta' : 'Alertas'}`,
+        desc: 'Hay certificados que requieren atención',
+        icon: AlertTriangle,
+        color: 'text-amber-400',
+        bgGlow: 'group-hover:shadow-amber-500/5',
+      };
+    }
+    if (pendingSslCount > 0) {
+      return {
+        value: 'Pendiente',
+        desc: 'Hay certificados sin verificar',
+        icon: ShieldQuestion,
+        color: 'text-slate-400',
+        bgGlow: 'group-hover:shadow-slate-500/5',
+      };
+    }
+    if (certificateCount === 0) {
+      return {
+        value: 'No aplica',
+        desc: 'No hay conexiones HTTPS',
+        icon: ShieldQuestion,
+        color: 'text-slate-400',
+        bgGlow: 'group-hover:shadow-slate-500/5',
+      };
+    }
+    return {
+      value: 'Al día',
+      desc: 'Certificados supervisados sin alertas',
+      icon: ShieldCheck,
+      color: 'text-teal-400',
+      bgGlow: 'group-hover:shadow-teal-500/5',
+    };
+  })();
 
   const stats = [
     {
       title: 'Disponibilidad Promedio',
-      value: `${averageUptime.toFixed(2)}%`,
+      value: averageUptime === null ? '--' : `${averageUptime.toFixed(2)}%`,
       icon: Activity,
-      color: 'text-emerald-400',
-      bgGlow: 'group-hover:shadow-emerald-500/5',
-      desc: 'Promedio global (últimas 30 pings)',
+      color: averageUptime === null ? 'text-slate-400' : 'text-emerald-400',
+      bgGlow: averageUptime === null ? 'group-hover:shadow-slate-500/5' : 'group-hover:shadow-emerald-500/5',
+      desc: totalServices === 0
+        ? 'Sin servicios registrados'
+        : monitoredServices.length === 0
+          ? 'Todos los servicios están pausados'
+        : averageUptime === null
+          ? 'Sin verificaciones disponibles'
+          : 'Promedio global (últimas 30 verificaciones)',
     },
     {
       title: 'Servicios Activos',
@@ -57,23 +125,29 @@ export const OverviewStats: React.FC = () => {
       icon: Server,
       color: 'text-brand-blue-400',
       bgGlow: 'group-hover:shadow-brand-blue-500/5',
-      desc: 'Servicios respondiendo correctamente',
+      desc: totalServices === 0
+        ? 'Sin servicios registrados'
+        : monitoredServices.length === 0
+          ? 'Todos los servicios están pausados'
+          : 'Servicios con respuesta',
     },
     {
       title: 'Latencia Promedio',
-      value: `${avgLatency} ms`,
+      value: avgLatency === null ? '--' : `${avgLatency} ms`,
       icon: Clock,
-      color: 'text-violet-400',
-      bgGlow: 'group-hover:shadow-violet-500/5',
-      desc: 'Tiempo de respuesta del servidor',
+      color: avgLatency === null ? 'text-slate-400' : 'text-violet-400',
+      bgGlow: avgLatency === null ? 'group-hover:shadow-slate-500/5' : 'group-hover:shadow-violet-500/5',
+      desc: totalServices === 0
+        ? 'Sin servicios registrados'
+        : monitoredServices.length === 0
+          ? 'Todos los servicios están pausados'
+        : avgLatency === null
+          ? 'Sin mediciones disponibles'
+          : 'Tiempo de respuesta promedio',
     },
     {
       title: 'Certificados SSL',
-      value: sslAlertsCount > 0 ? `${sslAlertsCount} Alertas` : 'Al Día',
-      icon: sslAlertsCount > 0 ? AlertTriangle : ShieldCheck,
-      color: sslAlertsCount > 0 ? 'text-amber-400' : 'text-teal-400',
-      bgGlow: sslAlertsCount > 0 ? 'group-hover:shadow-amber-500/5' : 'group-hover:shadow-teal-500/5',
-      desc: sslAlertsCount > 0 ? 'Vencimiento próximo (< 7 días)' : 'Todos los dominios protegidos',
+      ...sslSummary,
     },
   ];
 
