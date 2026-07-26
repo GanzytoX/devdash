@@ -22,11 +22,9 @@ import {
   Gauge,
 } from 'lucide-react';
 
-const App: React.FC = () => {
+const AuthenticatedApp: React.FC = () => {
   const {
     activeView,
-    isAuthenticated,
-    isAuthLoading,
     processNewLogs,
   } = useDashboard();
   const { services } = useServices();
@@ -282,18 +280,6 @@ const App: React.FC = () => {
     }
   };
 
-  if (isAuthLoading) {
-    return (
-      <div className="min-h-screen bg-[#040815] text-slate-400 flex items-center justify-center">
-        Verificando sesión…
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return <LoginView />;
-  }
-
   return (
     <div className="flex min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900/60 via-[#060a13] to-[#060a13]">
       {/* Sidebar navigation */}
@@ -319,6 +305,24 @@ const App: React.FC = () => {
       />
     </div>
   );
+};
+
+const App: React.FC = () => {
+  const { isAuthenticated, isAuthLoading } = useDashboard();
+
+  if (isAuthLoading) {
+    return (
+      <div className="min-h-screen bg-[#040815] text-slate-400 flex items-center justify-center">
+        Verificando sesión…
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <LoginView />;
+  }
+
+  return <AuthenticatedApp />;
 };
 
 export default App;

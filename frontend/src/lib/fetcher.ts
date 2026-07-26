@@ -1,6 +1,14 @@
 export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
+let logoutDispatched = false;
+
+export const resetLogoutDispatch = () => {
+  logoutDispatched = false;
+};
+
 const dispatchLogout = () => {
+  if (logoutDispatched) return;
+  logoutDispatched = true;
   window.dispatchEvent(new CustomEvent('devdash:logout'));
 };
 

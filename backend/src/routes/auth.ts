@@ -92,7 +92,6 @@ router.get(
 router.post("/api/auth/logout", (_req, res) => {
   res.clearCookie(config.sessionCookieName, clearedSessionCookieOptions);
   res.setHeader('Cache-Control', 'no-store');
-  res.setHeader('Clear-Site-Data', '"cache", "cookies", "storage"');
   res.json({ success: true });
 });
 

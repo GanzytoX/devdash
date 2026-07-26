@@ -5,7 +5,7 @@ import React, {
   useState,
   type ReactNode,
 } from 'react';
-import { API_URL } from '../lib/fetcher';
+import { API_URL, resetLogoutDispatch } from '../lib/fetcher';
 import {
   DashboardContext,
   type DashboardContextValue,
@@ -64,6 +64,7 @@ export const DashboardProvider: React.FC<{ children: ReactNode }> = ({ children 
         if (!response.ok) return;
         const data = await response.json() as SessionResponse;
         if (active && data.authenticated) {
+          resetLogoutDispatch();
           setUsername(data.user.username);
           setIsAuthenticated(true);
         }
@@ -89,6 +90,7 @@ export const DashboardProvider: React.FC<{ children: ReactNode }> = ({ children 
       if (res.ok) {
         const data = await res.json() as LoginResponse;
         if (data.success) {
+          resetLogoutDispatch();
           setUsername(data.user.username);
           setIsAuthenticated(true);
           return true;
