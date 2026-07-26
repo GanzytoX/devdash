@@ -1,5 +1,5 @@
 import React from "react";
-import { useDashboard } from "../../context/DashboardContext";
+import { useDashboard } from "../../hooks/useDashboard";
 import { useSystemStats } from "../../hooks/useSystemStats";
 import {
   LayoutDashboard,

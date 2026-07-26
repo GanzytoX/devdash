@@ -189,7 +189,7 @@ export const ServiceFormModal: React.FC<ServiceFormModalProps> = ({
               <div className="relative">
                 <select
                   value={method}
-                  onChange={e => setMethod(e.target.value as any)}
+                  onChange={e => setMethod(e.target.value as Service['method'])}
                   className="w-full px-3 py-2 text-xs glass-input focus:outline-none appearance-none cursor-pointer"
                 >
                   <option value="GET" className="bg-slate-900 text-slate-100">GET (Salud Completa)</option>

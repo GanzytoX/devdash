@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useDashboard } from '../../context/DashboardContext';
+import { useDashboard } from '../../hooks/useDashboard';
 import { Bell, Check, Sparkles, LogOut, ExternalLink } from 'lucide-react';
 
 export const Header: React.FC = () => {

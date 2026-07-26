@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useDashboard } from "../../context/DashboardContext";
+import { useDashboard } from "../../hooks/useDashboard";
 import { Zap, Lock, User, AlertCircle } from "lucide-react";
 
 export const LoginView: React.FC = () => {

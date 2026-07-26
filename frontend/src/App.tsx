@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useDashboard } from './context/DashboardContext';
+import { useDashboard } from './hooks/useDashboard';
 import { Sidebar } from './components/layout/Sidebar';
 import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
@@ -22,25 +22,20 @@ import {
   Gauge,
 } from 'lucide-react';
 
-export const App: React.FC = () => {
+const App: React.FC = () => {
   const { activeView, isAuthenticated, processNewLogs } = useDashboard();
   const { services } = useServices();
   const { logs } = useLogs();
   const { incidents } = useIncidents('7d');
 
-  // Process new logs for notifications
   useEffect(() => {
     if (logs.length > 0) {
       processNewLogs(logs);
     }
-  // processNewLogs intentionally reads the latest context state while logs are the event source.
-  // oxlint-disable-next-line react-hooks/exhaustive-deps
-  }, [logs]);
+  }, [logs, processNewLogs]);
 
-  // Modal handlers
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
-
 
   const handleEditService = (service: Service) => {
     setSelectedService(service);
@@ -51,7 +46,6 @@ export const App: React.FC = () => {
     setSelectedService(null);
     setIsModalOpen(true);
   };
-
 
   const renderView = () => {
     switch (activeView) {

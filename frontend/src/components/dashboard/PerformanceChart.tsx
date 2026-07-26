@@ -4,23 +4,32 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { GlassCard } from '../common/GlassCard';
 import { Info } from 'lucide-react';
 
+type ChartPoint = Record<string, string | number | null>;
+
+interface TooltipEntry {
+  color?: string;
+  stroke?: string;
+  name?: string;
+  value?: string | number;
+}
+
+interface ChartTooltipProps {
+  active?: boolean;
+  payload?: TooltipEntry[];
+  label?: string;
+}
+
 export const PerformanceChart: React.FC = () => {
   const { services } = useServices();
 
-  // Prepare chart data
-  // We align the latency history of the first 24 slots
   const chartData = React.useMemo(() => {
-    // Generate 24 slots (e.g. represent hours or ping intervals)
     const pointsCount = 24;
     const data = Array.from({ length: pointsCount }, (_, index) => {
-      const item: any = { name: `T-${pointsCount - 1 - index}` };
+      const item: ChartPoint = { name: `T-${pointsCount - 1 - index}` };
 
-      // Inject each service's latency at this index
       services.forEach(s => {
         if (s.paused) return;
-        // fallback if history is shorter
         const historyValue = s.latencyHistory[index] ?? s.latency;
-        // set value (omit offline 0s for cleaner chart metrics)
         item[s.name] = s.status === 'offline' ? null : historyValue;
       });
 
@@ -29,30 +38,28 @@ export const PerformanceChart: React.FC = () => {
     return data;
   }, [services]);
 
-  // Select colors for top 4 services dynamically
   const serviceColors = [
-    { stroke: '#1d72fe', fill: 'url(#colorBrandBlue650)' }, // Azul 650
-    { stroke: '#64a0ff', fill: 'url(#colorBrandBlue400)' }, // Azul 400
-    { stroke: '#9ac2ff', fill: 'url(#colorBrandBlue300)' }, // Azul 300
-    { stroke: '#3884fe', fill: 'url(#colorBrandBlue500)' }, // Azul 500
+    { stroke: '#1d72fe', fill: 'url(#colorBrandBlue650)' },
+    { stroke: '#64a0ff', fill: 'url(#colorBrandBlue400)' },
+    { stroke: '#9ac2ff', fill: 'url(#colorBrandBlue300)' },
+    { stroke: '#3884fe', fill: 'url(#colorBrandBlue500)' },
   ];
 
   const activeServices = services.filter(s => !s.paused).slice(0, 4);
 
-  // Custom tooltips with glassmorphic cards
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({ active, payload, label }: ChartTooltipProps) => {
     if (active && payload && payload.length) {
       return (
         <div className="glass-panel p-4 rounded-xl border border-white/10 text-xs font-sans shadow-2xl backdrop-blur-xl bg-slate-950/80">
           <p className="font-mono text-slate-400 mb-2 border-b border-white/5 pb-1 font-bold">Chequeo {label}</p>
           <div className="space-y-1.5">
-            {payload.map((p: any, idx: number) => (
-              <div key={idx} className="flex items-center justify-between gap-6">
+            {payload.map((entry, index) => (
+              <div key={`${entry.name}-${index}`} className="flex items-center justify-between gap-6">
                 <div className="flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full" style={{ backgroundColor: p.color || p.stroke }}></span>
-                  <span className="text-slate-200 font-medium">{p.name}</span>
+                  <span className="h-2 w-2 rounded-full" style={{ backgroundColor: entry.color || entry.stroke }} />
+                  <span className="text-slate-200 font-medium">{entry.name}</span>
                 </div>
-                <span className="font-mono font-bold text-slate-100">{p.value} ms</span>
+                <span className="font-mono font-bold text-slate-100">{entry.value} ms</span>
               </div>
             ))}
           </div>
