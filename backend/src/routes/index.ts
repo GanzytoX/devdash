@@ -5,7 +5,7 @@ import servicesRouter from "./services";
 import logsRouter from "./logs";
 import incidentsRouter from "./incidents";
 import systemRouter from "./system";
-import { authenticateToken } from "../middlewares/auth";
+import { authenticateToken } from "../middleware/auth";
 
 const router = Router();
 

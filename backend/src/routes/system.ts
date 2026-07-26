@@ -1,6 +1,6 @@
 import { Router } from "express";
 import os from "os";
-import { execSync } from "child_process";
+import { execFileSync } from "child_process";
 import { config } from "../config";
 
 const router = Router();
@@ -54,13 +54,14 @@ router.get("/api/system/detailed", (req, res) => {
     // Disk space information
     let diskUsage = "No Disponible";
     try {
-      const out = execSync("df -h / | tail -1").toString().trim();
+      const outputLines = execFileSync("df", ["-h", "/"]).toString().trim().split("\n");
+      const out = outputLines.at(-1) ?? "";
       const parts = out.split(/\s+/);
       if (parts.length >= 5) {
         diskUsage = `${parts[2]} / ${parts[1]} (${parts[4]})`;
       }
-    } catch (e) {
-      diskUsage = "Unavailable on this operating system";
+    } catch {
+      diskUsage = "No disponible en este sistema operativo";
     }
 
     const dbProvider = "Conector SQLite Activo (Incrustado Local)";

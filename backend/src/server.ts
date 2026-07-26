@@ -1,11 +1,8 @@
-import dotenv from "dotenv";
 import bcrypt from "bcryptjs";
 import { app } from "./app";
-import { prisma } from "./db";
+import { prisma } from "./database/prisma";
 import { config } from "./config";
 import { scheduler } from "./services/scheduler";
-
-dotenv.config();
 
 const PORT = config.port;
 

@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
-import { prisma } from './db';
-import { config } from './config';
+import { prisma } from '../database/prisma';
+import { config } from '../config';
 
 async function main() {
   if (!config.adminUsername || !config.adminPassword || config.adminPassword.length < 12) {

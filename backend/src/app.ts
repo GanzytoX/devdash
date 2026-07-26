@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { config, validateConfig } from "./config";
-import { securityHeaders } from "./security";
+import { securityHeaders } from "./middleware/securityHeaders";
 import router from "./routes";
 
 // Validate configurations at startup

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { buildIncidentCsv } from './utils/incidentCsv';
+import { buildIncidentCsv } from '../exporters/incidentCsv';
 
 test('exports localized, Excel-compatible incident data', () => {
   const csv = buildIncidentCsv([{

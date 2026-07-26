@@ -1,9 +1,9 @@
 import { Router } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { prisma } from "../db";
+import { prisma } from "../database/prisma";
 import { config } from "../config";
-import { loginRateLimit } from "../security";
+import { loginRateLimit } from "../middleware/loginRateLimit";
 
 const router = Router();
 const JWT_SECRET = config.jwtSecret;

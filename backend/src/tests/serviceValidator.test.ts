@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { parseServiceInput, validMethod } from './security';
+import { parseServiceInput, validMethod } from '../validators/service';
 
 test('accepts supported monitoring methods', () => {
   assert.equal(validMethod('GET'), true);

@@ -1,7 +1,8 @@
 import { Router } from "express";
-import { prisma } from "../db";
+import { prisma } from "../database/prisma";
 import { scheduler } from "../services/scheduler";
-import { parseServiceInput, assertSafeTarget } from "../security";
+import { assertSafeTarget } from "../security/targetValidation";
+import { parseServiceInput } from "../validators/service";
 
 const router = Router();
 
@@ -62,7 +63,7 @@ router.post("/api/services", async (req, res) => {
     // Crear registro en la base de datos con estado inicial offline
     const service = await prisma.service.create({
       data: {
-        ...(input as any),
+        ...input,
         status: "unknown",
         latency: 0,
         sslStatus: "none",
@@ -106,9 +107,7 @@ router.put("/api/services/:id", async (req, res) => {
 
     const updated = await prisma.service.update({
       where: { id },
-      data: {
-        ...(input as any),
-      },
+      data: input,
     });
 
     const timestampStr = new Date().toLocaleTimeString();

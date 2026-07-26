@@ -1,8 +1,8 @@
-import { prisma } from '../db';
+import { prisma } from '../database/prisma';
 import { pingService, checkSSL, sendWebhookAlert } from './pinger';
 import { config } from '../config';
 
-export class PingerScheduler {
+class PingerScheduler {
   private static instance: PingerScheduler;
   private intervals: Map<string, NodeJS.Timeout> = new Map();
   private running: Set<string> = new Set();

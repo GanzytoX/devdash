@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { prisma } from "../db";
-import { buildIncidentCsv } from "../utils/incidentCsv";
+import { prisma } from "../database/prisma";
+import { buildIncidentCsv } from "../exporters/incidentCsv";
 
 const router = Router();
 

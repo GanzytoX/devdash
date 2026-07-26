@@ -1,8 +1,9 @@
 import axios from 'axios';
 import https from 'https';
+import { TLSSocket } from 'tls';
 import { URL } from 'url';
 import { performance } from 'perf_hooks';
-import { assertSafeTarget } from '../security';
+import { assertSafeTarget } from '../security/targetValidation';
 
 export interface PingResultInfo {
   status: 'online' | 'offline' | 'degraded';
@@ -21,8 +22,8 @@ export async function pingService(url: string, method: string): Promise<PingResu
   try {
     await assertSafeTarget(url);
     const response = await axios({
-      method: method as any,
-      url: url,
+      method,
+      url,
       timeout: 5000,
       maxRedirects: 0,
       validateStatus: () => true, // Resolver la promesa para cualquier status code HTTP
@@ -75,8 +76,8 @@ export function checkSSL(urlString: string): Promise<SSLResultInfo> {
       };
 
       const req = https.request(options, (res) => {
-        const socket = res.socket as any;
-        if (socket && typeof socket.getPeerCertificate === 'function') {
+        const socket = res.socket;
+        if (socket instanceof TLSSocket) {
           const cert = socket.getPeerCertificate(true);
           if (cert && cert.valid_to) {
             const expiryDate = new Date(cert.valid_to);
