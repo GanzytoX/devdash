@@ -61,7 +61,7 @@ export const Header: React.FC = () => {
 
       {/* Action Controls */}
       <div className="flex items-center gap-4">
-        <a href="/status" target="_blank" aria-label="Abrir página pública" title="Página pública" className="p-2.5 rounded-xl border border-white/5 bg-white/5 text-slate-300 hover:text-white"><ExternalLink className="h-4 w-4" /></a>
+        <a href="/status" target="_blank" rel="noopener noreferrer" aria-label="Abrir página pública" title="Página pública" className="p-2.5 rounded-xl border border-white/5 bg-white/5 text-slate-300 hover:text-white"><ExternalLink className="h-4 w-4" /></a>
 
 
 

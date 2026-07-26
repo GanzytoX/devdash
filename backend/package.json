@@ -1,6 +1,7 @@
 {
   "name": "devdash-backend",
   "version": "1.0.0",
+  "packageManager": "pnpm@11.15.1",
   "description": "DevDash self-hosted backend service",
   "main": "dist/server.js",
   "scripts": {

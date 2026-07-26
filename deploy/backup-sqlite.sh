@@ -1,5 +1,6 @@
 #!/bin/sh
 set -eu
+umask 077
 
 DB_PATH="${DB_PATH:-/var/lib/docker/volumes/devdash_data/_data/devdash.db}"
 BACKUP_DIR="${BACKUP_DIR:-$(dirname "$0")/backups}"
@@ -17,7 +18,9 @@ if ! command -v sqlite3 >/dev/null 2>&1; then
 fi
 
 mkdir -p "$BACKUP_DIR"
+chmod 700 "$BACKUP_DIR"
 sqlite3 "$DB_PATH" ".backup '$BACKUP_FILE'"
+chmod 600 "$BACKUP_FILE"
 find "$BACKUP_DIR" -type f -name 'devdash-*.db' -mtime "+$RETENTION_DAYS" -delete
 
 echo "Respaldo creado: $BACKUP_FILE"

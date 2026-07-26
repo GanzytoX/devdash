@@ -41,7 +41,22 @@ ADMIN_PASSWORD=una-contrasena-segura-de-al-menos-12-caracteres
 CORS_ORIGINS=https://estado.tudominio.com
 PUBLIC_APP_URL=https://estado.tudominio.com
 DATABASE_URL=file:/data/devdash.db
+TRUST_PROXY=1
+SESSION_TTL_MINUTES=480
 ```
+
+Genera los secretos en el propio servidor y no los confirmes en Git. Por
+ejemplo:
+
+```bash
+openssl rand -hex 32
+```
+
+En producción, `PUBLIC_APP_URL` debe usar HTTPS. Publica únicamente el proxy
+frontal (80/443), mantén el puerto 3001 cerrado y limita SSH a las direcciones
+de administración. Cambia las credenciales iniciales después del primer
+acceso y deja `ALLOW_PRIVATE_TARGETS=false` para impedir solicitudes a redes
+internas y al servicio de metadatos del VPS.
 
 ## Construcción y arranque
 
@@ -83,6 +98,20 @@ chmod +x deploy/backup-sqlite.sh
 
 El volumen `devdash_data` no se elimina con `docker compose down`. No utilices
 `docker compose down -v` en producción salvo que quieras borrar los datos.
+Los respaldos se crean con permisos `0600`; almacénalos cifrados fuera del VPS
+y comprueba periódicamente que puedan restaurarse.
+
+## Endurecimiento recomendado del VPS
+
+- Activa actualizaciones de seguridad automáticas y un firewall con 22, 80 y
+  443 como únicos puertos públicos necesarios.
+- Termina TLS con un certificado válido y redirige HTTP a HTTPS antes de
+  exponer la aplicación.
+- Ejecuta Docker en modo rootless cuando la imagen del VPS lo permita.
+- No montes el socket de Docker ni carpetas del host dentro de los
+  contenedores de DevDash.
+- Revisa los registros, renueva secretos ante cualquier exposición y conserva
+  respaldos cifrados con una política de rotación.
 
 ## Verificación previa a la entrega
 
@@ -93,4 +122,6 @@ cd .. && docker compose -f deploy/docker-compose.yml config
 ```
 
 Comprueba además `/health`, `/status`, el reinicio del VPS, el certificado TLS
-y la entrega real de alertas.
+y la entrega real de alertas. En las herramientas del navegador, verifica que
+la cookie de sesión sea `HttpOnly`, `SameSite=Strict` y `Secure`, y que ninguna
+credencial o token aparezca en `localStorage` o `sessionStorage`.

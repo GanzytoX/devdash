@@ -60,7 +60,7 @@ export function PublicStatusPage() {
 
           <section className="glass-panel rounded-2xl p-5"><h2 className="font-bold flex items-center gap-2"><Clock3 className="h-4 w-4" /> Incidentes recientes</h2><div className="mt-4 divide-y divide-white/5">{data.incidents.length === 0 ? <p className="text-sm text-slate-400 py-4">No hubo incidentes durante este periodo.</p> : data.incidents.map(i => <div key={i.id} className="py-3 flex justify-between gap-4 text-sm"><div><p className="font-medium">{i.service.name}</p><p className="text-slate-400 text-xs mt-1">{i.message}</p></div><span className={i.status === 'resolved' ? 'text-emerald-400' : 'text-red-400'}>{statusLabel(i.status)}</span></div>)}</div></section>
         </>}
-        <footer className="text-center text-xs text-slate-500 pt-4 flex justify-center items-center gap-2"><Server className="h-3.5 w-3.5" /> Alojado en <a className="text-brand-blue-400" href="https://cubepath.com" target="_blank" rel="noreferrer">CubePath</a><span>·</span><ShieldCheck className="h-3.5 w-3.5" /> Desarrollado con DevDash <Activity className="h-3.5 w-3.5" /></footer>
+        <footer className="text-center text-xs text-slate-500 pt-4 flex justify-center items-center gap-2"><Server className="h-3.5 w-3.5" /> Alojado en <a className="text-brand-blue-400" href="https://cubepath.com" target="_blank" rel="noopener noreferrer">CubePath</a><span>·</span><ShieldCheck className="h-3.5 w-3.5" /> Desarrollado con DevDash <Activity className="h-3.5 w-3.5" /></footer>
       </div>
     </main>
   );
