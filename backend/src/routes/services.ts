@@ -3,10 +3,20 @@ import { prisma } from "../database/prisma";
 import { scheduler } from "../services/scheduler";
 import { assertSafeTarget } from "../security/targetValidation";
 import { parseServiceInput } from "../validators/service";
+import { RequestValidationError } from "../errors/RequestValidationError";
+import type { Response } from "express";
 
 const router = Router();
 
-// 1. Obtener lista de servicios con sus historiales agregados
+const sendServiceError = (res: Response, error: unknown, action: string) => {
+  if (error instanceof RequestValidationError) {
+    return res.status(400).json({ error: error.message });
+  }
+
+  console.error(action, error);
+  return res.status(500).json({ error: "Error interno del servidor" });
+};
+
 router.get("/api/services", async (req, res) => {
   try {
     const services = await prisma.service.findMany({
@@ -88,8 +98,7 @@ router.post("/api/services", async (req, res) => {
 
     res.status(201).json(service);
   } catch (error) {
-    console.error("Error al crear servicio:", error);
-    res.status(error instanceof Error && /nombre|URL|método|intervalo|destinos|HTTP/i.test(error.message) ? 400 : 500).json({ error: error instanceof Error ? error.message : "Error interno del servidor" });
+    return sendServiceError(res, error, "Error al crear servicio:");
   }
 });
 
@@ -128,8 +137,7 @@ router.put("/api/services/:id", async (req, res) => {
 
     res.json(updated);
   } catch (error) {
-    console.error("Error al actualizar servicio:", error);
-    res.status(error instanceof Error && /nombre|URL|método|intervalo|destinos|HTTP/i.test(error.message) ? 400 : 500).json({ error: error instanceof Error ? error.message : "Error interno del servidor" });
+    return sendServiceError(res, error, "Error al actualizar servicio:");
   }
 });
 

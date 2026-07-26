@@ -1,9 +1,13 @@
 import axios from 'axios';
+import http from 'http';
 import https from 'https';
 import { TLSSocket } from 'tls';
 import { URL } from 'url';
 import { performance } from 'perf_hooks';
-import { assertSafeTarget } from '../security/targetValidation';
+import {
+  resolveSafeTarget,
+  type ResolvedTarget,
+} from '../security/targetValidation';
 
 export interface PingResultInfo {
   status: 'online' | 'offline' | 'degraded';
@@ -16,61 +20,88 @@ export interface SSLResultInfo {
   sslExpiryDate: string | null;
 }
 
-// Mide la latencia y la salud del servicio mediante una llamada HTTP/HEAD con timeout
+const buildPinnedRequest = (target: ResolvedTarget) => {
+  const requestUrl = new URL(target.url);
+  requestUrl.hostname = target.family === 6 ? `[${target.address}]` : target.address;
+
+  return {
+    requestUrl: requestUrl.toString(),
+    hostHeader: target.url.host,
+    httpsAgent: target.url.protocol === 'https:'
+      ? new https.Agent({ servername: target.hostname })
+      : undefined,
+    httpAgent: target.url.protocol === 'http:'
+      ? new http.Agent()
+      : undefined,
+  };
+};
+
 export async function pingService(url: string, method: string): Promise<PingResultInfo> {
   const start = performance.now();
   try {
-    await assertSafeTarget(url);
+    const target = await resolveSafeTarget(url);
+    const pinned = buildPinnedRequest(target);
     const response = await axios({
       method,
-      url,
+      url: pinned.requestUrl,
       timeout: 5000,
       maxRedirects: 0,
-      validateStatus: () => true, // Resolver la promesa para cualquier status code HTTP
+      proxy: false,
+      responseType: 'stream',
+      httpAgent: pinned.httpAgent,
+      httpsAgent: pinned.httpsAgent,
+      validateStatus: () => true,
       headers: {
+        Host: pinned.hostHeader,
         'User-Agent': 'DevDash/1.0.0-Uptime-Monitor'
-      }
+      },
     });
+    response.data.destroy();
     const duration = Math.round(performance.now() - start);
 
-    // Consideramos "online" si es menor a 400 (códigos 2xx y 3xx)
     const isSuccess = response.status >= 200 && response.status < 400;
 
     if (!isSuccess) {
       return { status: 'offline', latency: duration };
     }
 
-    // Si la latencia es extremadamente alta (> 1000ms), reporta "degraded"
     if (duration > 1000) {
       return { status: 'degraded', latency: duration };
     }
 
     return { status: 'online', latency: duration };
-  } catch (err) {
+  } catch {
     const duration = Math.round(performance.now() - start);
     return { status: 'offline', latency: duration };
   }
 }
 
-// Verifica de forma asíncrona la expiración del certificado SSL usando el cliente nativo de Node.js
-export function checkSSL(urlString: string): Promise<SSLResultInfo> {
+export async function checkSSL(urlString: string): Promise<SSLResultInfo> {
   if (!urlString.startsWith('https:')) {
-    return Promise.resolve({
+    return {
       sslStatus: 'none',
       sslExpiryDays: null,
       sslExpiryDate: null,
-    });
+    };
+  }
+
+  let target: ResolvedTarget;
+  try {
+    target = await resolveSafeTarget(urlString);
+  } catch {
+    return { sslStatus: 'unknown', sslExpiryDays: null, sslExpiryDate: null };
   }
 
   return new Promise((resolve) => {
     try {
-      const parsedUrl = new URL(urlString);
       const options = {
-        hostname: parsedUrl.hostname,
-        port: parsedUrl.port || 443,
-        path: parsedUrl.pathname + parsedUrl.search,
+        hostname: target.address,
+        servername: target.hostname,
+        port: target.url.port || 443,
+        path: target.url.pathname + target.url.search,
         method: 'HEAD',
-        rejectUnauthorized: false, // Permitir obtener datos aunque el cert esté vencido
+        headers: { Host: target.url.host },
+        rejectUnauthorized: false,
         agent: false,
         timeout: 5000,
       };
@@ -117,7 +148,7 @@ export function checkSSL(urlString: string): Promise<SSLResultInfo> {
       });
 
       req.end();
-    } catch (e) {
+    } catch {
       resolve({ sslStatus: 'unknown', sslExpiryDays: null, sslExpiryDate: null });
     }
   });
@@ -144,9 +175,9 @@ export async function sendWebhookAlert(serviceName: string, url: string, status:
             ts: Math.floor(Date.now() / 1000),
           }
         ]
-      });
-    } catch (e) {
-      console.error('Error enviando webhook a Slack:', e);
+      }, { timeout: 5000, maxRedirects: 0 });
+    } catch {
+      console.error('No se pudo entregar el webhook de Slack.');
     }
   }
 
@@ -161,9 +192,9 @@ export async function sendWebhookAlert(serviceName: string, url: string, status:
             timestamp: new Date().toISOString(),
           }
         ]
-      });
-    } catch (e) {
-      console.error('Error enviando webhook a Discord:', e);
+      }, { timeout: 5000, maxRedirects: 0 });
+    } catch {
+      console.error('No se pudo entregar el webhook de Discord.');
     }
   }
 
@@ -171,9 +202,9 @@ export async function sendWebhookAlert(serviceName: string, url: string, status:
     try {
       await axios.post(genericUrl, {
         event: 'service.status_changed', serviceName, url, status, details, timestamp: new Date().toISOString(),
-      }, { timeout: 5000 });
-    } catch (e) {
-      console.error('Error enviando webhook genérico:', e);
+      }, { timeout: 5000, maxRedirects: 0 });
+    } catch {
+      console.error('No se pudo entregar el webhook genérico.');
     }
   }
 }

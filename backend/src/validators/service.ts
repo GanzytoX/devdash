@@ -1,3 +1,5 @@
+import { RequestValidationError } from '../errors/RequestValidationError';
+
 export type ServiceMethod = 'GET' | 'POST' | 'HEAD';
 
 export interface ServiceInput {
@@ -22,21 +24,21 @@ export function parseServiceInput(
 
   if (!partial || body.name !== undefined) {
     if (typeof body.name !== 'string' || !body.name.trim() || body.name.length > 80) {
-      throw new Error('El nombre debe tener entre 1 y 80 caracteres.');
+      throw new RequestValidationError('El nombre debe tener entre 1 y 80 caracteres.');
     }
     result.name = body.name.trim();
   }
 
   if (!partial || body.url !== undefined) {
-    if (typeof body.url !== 'string' || body.url.length > 2048) {
-      throw new Error('La URL es obligatoria.');
+    if (typeof body.url !== 'string' || !body.url.trim() || body.url.length > 2048) {
+      throw new RequestValidationError('La URL es obligatoria.');
     }
-    result.url = body.url;
+    result.url = body.url.trim();
   }
 
   if (!partial || body.method !== undefined) {
     if (!validMethod(body.method)) {
-      throw new Error('El método debe ser GET, POST o HEAD.');
+      throw new RequestValidationError('El método debe ser GET, POST o HEAD.');
     }
     result.method = body.method;
   }
@@ -44,17 +46,23 @@ export function parseServiceInput(
   if (!partial || body.interval !== undefined) {
     const interval = Number(body.interval);
     if (!Number.isInteger(interval) || interval < 30 || interval > 86400) {
-      throw new Error('El intervalo debe estar entre 30 y 86400 segundos.');
+      throw new RequestValidationError('El intervalo debe estar entre 30 y 86400 segundos.');
     }
     result.interval = interval;
   }
 
   if (body.publicVisible !== undefined) {
-    result.publicVisible = Boolean(body.publicVisible);
+    if (typeof body.publicVisible !== 'boolean') {
+      throw new RequestValidationError('La visibilidad pública debe ser un valor booleano.');
+    }
+    result.publicVisible = body.publicVisible;
   }
 
   if (body.tags !== undefined) {
-    result.tags = String(body.tags).slice(0, 200);
+    if (typeof body.tags !== 'string' || body.tags.length > 200) {
+      throw new RequestValidationError('Las etiquetas no pueden superar los 200 caracteres.');
+    }
+    result.tags = body.tags.trim();
   }
 
   return result as ServiceInput;

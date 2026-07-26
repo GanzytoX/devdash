@@ -16,3 +16,29 @@ test('normalizes a valid service payload', () => {
 test('rejects unsafe monitoring intervals', () => {
   assert.throws(() => parseServiceInput({ name: 'API', url: 'https://example.com', method: 'GET', interval: 1 }), /intervalo/i);
 });
+
+test('does not coerce a string into public visibility', () => {
+  assert.throws(
+    () => parseServiceInput({
+      name: 'API',
+      url: 'https://example.com',
+      method: 'GET',
+      interval: 30,
+      publicVisible: 'false',
+    }),
+    /booleano/i,
+  );
+});
+
+test('rejects oversized tags', () => {
+  assert.throws(
+    () => parseServiceInput({
+      name: 'API',
+      url: 'https://example.com',
+      method: 'GET',
+      interval: 30,
+      tags: 'x'.repeat(201),
+    }),
+    /etiquetas/i,
+  );
+});

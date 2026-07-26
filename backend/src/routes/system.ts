@@ -2,6 +2,8 @@ import { Router } from "express";
 import os from "os";
 import { execFileSync } from "child_process";
 import { config } from "../config";
+import { asyncHandler } from "../middleware/asyncHandler";
+import { sendWebhookAlert } from "../services/pinger";
 
 const router = Router();
 
@@ -89,13 +91,13 @@ router.get('/api/settings', (_req, res) => res.json({
   instanceName: config.instanceName, instanceRegion: config.instanceRegion, retentionDays: config.retentionDays,
 }));
 
-router.post('/api/settings/test-webhook/:channel', async (req, res) => {
+router.post('/api/settings/test-webhook/:channel', asyncHandler(async (req, res) => {
   const channel = req.params.channel;
   const envName = channel === 'slack' ? 'SLACK_WEBHOOK_URL' : channel === 'discord' ? 'DISCORD_WEBHOOK_URL' : channel === 'generic' ? 'GENERIC_WEBHOOK_URL' : '';
   if (!envName) return res.status(400).json({ error: 'El canal de webhook no existe.' });
   if (!process.env[envName]) return res.status(400).json({ error: `${channel} no está configurado en el servidor.` });
-  await (await import('../services/pinger')).sendWebhookAlert('Prueba de DevDash', config.publicAppUrl, 'online', 'Un operador autenticado solicitó esta alerta de prueba.', channel as 'slack' | 'discord' | 'generic');
+  await sendWebhookAlert('Prueba de DevDash', config.publicAppUrl, 'online', 'Un operador autenticado solicitó esta alerta de prueba.', channel as 'slack' | 'discord' | 'generic');
   res.json({ success: true });
-});
+}));
 
 export default router;

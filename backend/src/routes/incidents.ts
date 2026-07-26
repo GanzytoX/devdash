@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { prisma } from "../database/prisma";
 import { buildIncidentCsv } from "../exporters/incidentCsv";
+import { asyncHandler } from "../middleware/asyncHandler";
 
 const router = Router();
 
@@ -9,13 +10,17 @@ const periodSince = (period: string) => {
   return new Date(Date.now() - duration * 86_400_000);
 };
 
-router.get('/api/incidents', async (req, res) => {
+router.get('/api/incidents', asyncHandler(async (req, res) => {
   const period = ['24h', '7d', '30d'].includes(String(req.query.period)) ? String(req.query.period) : '7d';
   res.json(await prisma.incident.findMany({ where: { startedAt: { gte: periodSince(period) } }, include: { service: { select: { name: true } } }, orderBy: { startedAt: 'desc' }, take: 200 }));
-});
+}));
 
-router.get('/api/incidents/export.csv', async (_req, res) => {
-  const incidents = await prisma.incident.findMany({ include: { service: { select: { name: true } } }, orderBy: { startedAt: 'desc' } });
+router.get('/api/incidents/export.csv', asyncHandler(async (_req, res) => {
+  const incidents = await prisma.incident.findMany({
+    include: { service: { select: { name: true } } },
+    orderBy: { startedAt: 'desc' },
+    take: 10_000,
+  });
   const csv = buildIncidentCsv(incidents.map(incident => ({
     serviceName: incident.service.name,
     type: incident.type,
@@ -27,6 +32,6 @@ router.get('/api/incidents/export.csv', async (_req, res) => {
   })));
   res.setHeader('Content-Type', 'text/csv; charset=utf-8');
   res.attachment('devdash-incidents.csv').send(csv);
-});
+}));
 
 export default router;
