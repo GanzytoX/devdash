@@ -5,6 +5,7 @@ import { assertSafeTarget } from "../security/targetValidation";
 import { parseServiceInput } from "../validators/service";
 import { RequestValidationError } from "../errors/RequestValidationError";
 import type { Response } from "express";
+import { requireAdmin } from "../middleware/auth";
 
 const router = Router();
 
@@ -63,7 +64,7 @@ router.get("/api/services", async (req, res) => {
 });
 
 // 2. Crear un nuevo servicio
-router.post("/api/services", async (req, res) => {
+router.post("/api/services", requireAdmin, async (req, res) => {
   try {
     const input = parseServiceInput(req.body);
     await assertSafeTarget(String(input.url));
@@ -103,7 +104,7 @@ router.post("/api/services", async (req, res) => {
 });
 
 // 3. Editar un servicio existente
-router.put("/api/services/:id", async (req, res) => {
+router.put("/api/services/:id", requireAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     const input = parseServiceInput(req.body, true);
@@ -142,7 +143,7 @@ router.put("/api/services/:id", async (req, res) => {
 });
 
 // 4. Eliminar un servicio
-router.delete("/api/services/:id", async (req, res) => {
+router.delete("/api/services/:id", requireAdmin, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -175,7 +176,7 @@ router.delete("/api/services/:id", async (req, res) => {
 });
 
 // 5. Alternar pausa de monitoreo
-router.post("/api/services/:id/toggle", async (req, res) => {
+router.post("/api/services/:id/toggle", requireAdmin, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -218,7 +219,7 @@ router.post("/api/services/:id/toggle", async (req, res) => {
 });
 
 // 6. Forzar chequeo de ping y SSL manual inmediato
-router.post("/api/services/:id/check", async (req, res) => {
+router.post("/api/services/:id/check", requireAdmin, async (req, res) => {
   try {
     const { id } = req.params;
 

@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs";
+import { randomBytes } from "crypto";
 import { app } from "./app";
 import { prisma } from "./database/prisma";
 import { config } from "./config";
@@ -21,6 +22,7 @@ async function seedAdminUser() {
         data: {
           username: config.adminUsername,
           password: hashedPassword,
+          role: 'ADMIN',
         },
       });
       console.log(`Initial administrator created: ${config.adminUsername}.`);
@@ -30,12 +32,42 @@ async function seedAdminUser() {
   }
 }
 
+async function seedDemoUser() {
+  if (!config.demoModeEnabled) return;
+
+  try {
+    const existing = await prisma.user.findUnique({
+      where: { username: config.demoUsername },
+    });
+    if (existing?.role === 'ADMIN') {
+      console.warn(`Demo mode is disabled for reserved administrator username: ${config.demoUsername}.`);
+      return;
+    }
+
+    const randomPassword = randomBytes(32).toString('hex');
+    const password = await bcrypt.hash(randomPassword, 12);
+    await prisma.user.upsert({
+      where: { username: config.demoUsername },
+      update: { role: 'DEMO' },
+      create: {
+        username: config.demoUsername,
+        password,
+        role: 'DEMO',
+      },
+    });
+    console.log(`Read-only demo account ready: ${config.demoUsername}.`);
+  } catch (error) {
+    console.error('Error seeding demo user:', error);
+  }
+}
+
 // Start HTTP server listener
 const server = app.listen(PORT, async () => {
   console.log(`\n🚀 DevDash server successfully started on port ${PORT}`);
 
   // Seed default admin user
   await seedAdminUser();
+  await seedDemoUser();
 
   // Start scheduler
   await scheduler.start();

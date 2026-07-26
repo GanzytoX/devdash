@@ -10,7 +10,7 @@ import { authenticateToken } from "../middleware/auth";
 const router = Router();
 
 // --- UNPROTECTED ROUTES ---
-router.use(authRouter);   // handles /health and /api/auth/login
+router.use(authRouter);   // handles /health and /api/auth/*
 router.use(publicRouter); // handles /api/public/status
 
 // --- PROTECTED ROUTES ---

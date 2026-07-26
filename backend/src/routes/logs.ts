@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { prisma } from "../database/prisma";
+import { requireAdmin } from "../middleware/auth";
 
 const router = Router();
 
@@ -18,7 +19,7 @@ router.get("/api/logs", async (req, res) => {
 });
 
 // 8. Limpiar todos los logs del sistema
-router.delete("/api/logs", async (req, res) => {
+router.delete("/api/logs", requireAdmin, async (req, res) => {
   try {
     await prisma.logEntry.deleteMany({});
 

@@ -79,5 +79,6 @@ model User {
   id        String   @id @default(uuid())
   username  String   @unique
   password  String   // Hashed password
+  role      String   @default("DEMO")
   createdAt DateTime @default(now())
 }

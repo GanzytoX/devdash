@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import type { Request, Response, NextFunction } from "express";
 import { config } from "../config";
 import { readSessionCookie } from "../security/session";
+import { isUserRole, type UserRole } from "../security/userRole";
 
 const JWT_SECRET = config.jwtSecret;
 const JWT_OPTIONS: jwt.VerifyOptions = {
@@ -10,7 +11,13 @@ const JWT_OPTIONS: jwt.VerifyOptions = {
   audience: 'devdash-dashboard',
 };
 
-export type AuthenticatedRequest = Request & { user?: { id: string; username: string } };
+export interface AuthenticatedUser {
+  id: string;
+  username: string;
+  role: UserRole;
+}
+
+export type AuthenticatedRequest = Request & { user?: AuthenticatedUser };
 
 export const authenticateToken = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   const authorization = req.headers.authorization;
@@ -30,13 +37,28 @@ export const authenticateToken = (req: AuthenticatedRequest, res: Response, next
     }
 
     const claims = payload as jwt.JwtPayload;
-    if (typeof claims.id !== 'string' || typeof claims.username !== 'string') {
+    if (
+      typeof claims.id !== 'string'
+      || typeof claims.username !== 'string'
+      || !isUserRole(claims.role)
+    ) {
       throw new Error('Invalid session payload');
     }
 
-    req.user = { id: claims.id, username: claims.username };
+    req.user = { id: claims.id, username: claims.username, role: claims.role };
     next();
   } catch {
     return res.status(401).json({ error: "La sesión no es válida o ha vencido." });
   }
+};
+
+export const requireAdmin = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  if (req.user?.role !== 'ADMIN') {
+    return res.status(403).json({
+      error: 'El modo demostración es de solo lectura.',
+      code: 'DEMO_READ_ONLY',
+    });
+  }
+
+  next();
 };

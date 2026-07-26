@@ -24,6 +24,8 @@ export const config = {
   sessionTtlMs: sessionTtlMinutes * 60 * 1000,
   adminUsername: process.env.ADMIN_USERNAME,
   adminPassword: process.env.ADMIN_PASSWORD,
+  demoModeEnabled: process.env.DEMO_MODE_ENABLED === 'true',
+  demoUsername: process.env.DEMO_USERNAME?.trim() || 'demo',
 };
 
 export function validateConfig() {
@@ -37,6 +39,9 @@ export function validateConfig() {
   }
   if (config.nodeEnv === 'production' && config.corsOrigins.length === 0) {
     throw new Error('CORS_ORIGINS must contain at least one trusted origin in production.');
+  }
+  if (config.demoModeEnabled && (!config.demoUsername || config.demoUsername.length > 80)) {
+    throw new Error('DEMO_USERNAME must contain between 1 and 80 characters.');
   }
   let publicUrl: URL;
   try {

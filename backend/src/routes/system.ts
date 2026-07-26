@@ -4,6 +4,7 @@ import { execFileSync } from "child_process";
 import { config } from "../config";
 import { asyncHandler } from "../middleware/asyncHandler";
 import { sendWebhookAlert } from "../services/pinger";
+import { requireAdmin } from "../middleware/auth";
 
 const router = Router();
 
@@ -91,7 +92,7 @@ router.get('/api/settings', (_req, res) => res.json({
   instanceName: config.instanceName, instanceRegion: config.instanceRegion, retentionDays: config.retentionDays,
 }));
 
-router.post('/api/settings/test-webhook/:channel', asyncHandler(async (req, res) => {
+router.post('/api/settings/test-webhook/:channel', requireAdmin, asyncHandler(async (req, res) => {
   const channel = req.params.channel;
   const envName = channel === 'slack' ? 'SLACK_WEBHOOK_URL' : channel === 'discord' ? 'DISCORD_WEBHOOK_URL' : channel === 'generic' ? 'GENERIC_WEBHOOK_URL' : '';
   if (!envName) return res.status(400).json({ error: 'El canal de webhook no existe.' });

@@ -1,0 +1,3 @@
+ALTER TABLE "User" ADD COLUMN "role" TEXT NOT NULL DEFAULT 'DEMO';
+
+UPDATE "User" SET "role" = 'ADMIN';

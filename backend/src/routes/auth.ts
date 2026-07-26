@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, type Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { prisma } from "../database/prisma";
@@ -13,6 +13,7 @@ import {
   clearedSessionCookieOptions,
   sessionCookieOptions,
 } from "../security/session";
+import { isUserRole, type UserRole } from "../security/userRole";
 
 const router = Router();
 const JWT_SECRET = config.jwtSecret;
@@ -21,6 +22,37 @@ const healthRateLimit = createRequestRateLimit({
   maxRequests: 120,
   windowMs: 60_000,
 });
+const demoLoginRateLimit = createRequestRateLimit({
+  maxRequests: 20,
+  windowMs: 60_000,
+});
+
+const issueSession = (
+  res: Response,
+  user: { id: string; username: string; role: UserRole },
+) => {
+  const token = jwt.sign(
+    { id: user.id, username: user.username, role: user.role },
+    JWT_SECRET,
+    {
+      algorithm: 'HS256',
+      issuer: 'devdash',
+      audience: 'devdash-dashboard',
+      expiresIn: Math.floor(config.sessionTtlMs / 1000),
+    },
+  );
+
+  res.setHeader('Cache-Control', 'no-store');
+  res.cookie(config.sessionCookieName, token, sessionCookieOptions);
+  return res.json({
+    success: true,
+    user: {
+      id: user.id,
+      username: user.username,
+      role: user.role,
+    },
+  });
+};
 
 // Root health check endpoint
 router.get("/health", healthRateLimit, async (_req, res) => {
@@ -48,32 +80,43 @@ router.post("/api/auth/login", loginRateLimit, async (req, res) => {
     });
 
     const isMatch = await bcrypt.compare(password, user?.password || DUMMY_PASSWORD_HASH);
-    if (!user || !isMatch) {
+    const role = user?.role;
+    if (!user || !isMatch || !isUserRole(role)) {
       return res.status(401).json({ error: "Credenciales inválidas." });
     }
 
-    const token = jwt.sign(
-      { id: user.id, username: user.username },
-      JWT_SECRET,
-      {
-        algorithm: 'HS256',
-        issuer: 'devdash',
-        audience: 'devdash-dashboard',
-        expiresIn: Math.floor(config.sessionTtlMs / 1000),
-      },
-    );
-
-    res.setHeader('Cache-Control', 'no-store');
-    res.cookie(config.sessionCookieName, token, sessionCookieOptions);
-    res.json({
-      success: true,
-      user: {
-        username: user.username,
-      },
+    return issueSession(res, {
+      id: user.id,
+      username: user.username,
+      role,
     });
   } catch (error) {
     console.error("Login error:", error);
     res.status(500).json({ error: "Error interno del servidor" });
+  }
+});
+
+router.post('/api/auth/demo', demoLoginRateLimit, async (_req, res) => {
+  if (!config.demoModeEnabled) {
+    return res.status(404).json({ error: 'El modo demostración no está disponible.' });
+  }
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { username: config.demoUsername },
+    });
+    if (!user || user.role !== 'DEMO') {
+      return res.status(503).json({ error: 'El modo demostración no está disponible temporalmente.' });
+    }
+
+    return issueSession(res, {
+      id: user.id,
+      username: user.username,
+      role: 'DEMO',
+    });
+  } catch (error) {
+    console.error('Demo login error:', error);
+    return res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
 
@@ -84,7 +127,7 @@ router.get(
     res.setHeader('Cache-Control', 'no-store');
     res.json({
       authenticated: true,
-      user: { username: req.user?.username },
+      user: req.user,
     });
   },
 );

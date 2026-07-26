@@ -9,8 +9,8 @@ async function main() {
   const password = await bcrypt.hash(config.adminPassword, 12);
   await prisma.user.upsert({
     where: { username: config.adminUsername },
-    update: { password },
-    create: { username: config.adminUsername, password },
+    update: { password, role: 'ADMIN' },
+    create: { username: config.adminUsername, password, role: 'ADMIN' },
   });
   console.log(`Administrator credentials updated for ${config.adminUsername}.`);
 }
