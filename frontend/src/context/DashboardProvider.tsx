@@ -15,7 +15,11 @@ import type { LogEntry } from '../services/apiService';
 
 interface LoginResponse {
   success: boolean;
-  token: string;
+  user: { username: string };
+}
+
+interface SessionResponse {
+  authenticated: boolean;
   user: { username: string };
 }
 
@@ -26,13 +30,9 @@ export const DashboardProvider: React.FC<{ children: ReactNode }> = ({ children 
   const [activeViewState, setActiveViewState] = useState<DashboardContextValue['activeView']>(initialView);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
 
-  // Authentication state
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    return !!sessionStorage.getItem('devdash_token');
-  });
-  const [username, setUsername] = useState<string | null>(() => {
-    return sessionStorage.getItem('devdash_username');
-  });
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
+  const [username, setUsername] = useState<string | null>(null);
 
   // Track previous log IDs for notification diffing
   const prevLogIdsRef = useRef<Set<string>>(new Set());
@@ -43,10 +43,12 @@ export const DashboardProvider: React.FC<{ children: ReactNode }> = ({ children 
   }, []);
 
   const logout = useCallback(() => {
-    sessionStorage.removeItem('devdash_token');
-    sessionStorage.removeItem('devdash_username');
     setUsername(null);
     setIsAuthenticated(false);
+    void fetch(`${API_URL}/auth/logout`, {
+      method: 'POST',
+      credentials: 'include',
+    }).catch(() => undefined);
   }, []);
 
   useEffect(() => {
@@ -54,18 +56,39 @@ export const DashboardProvider: React.FC<{ children: ReactNode }> = ({ children 
     return () => window.removeEventListener('devdash:logout', logout);
   }, [logout]);
 
+  useEffect(() => {
+    let active = true;
+
+    fetch(`${API_URL}/auth/session`, { credentials: 'include' })
+      .then(async response => {
+        if (!response.ok) return;
+        const data = await response.json() as SessionResponse;
+        if (active && data.authenticated) {
+          setUsername(data.user.username);
+          setIsAuthenticated(true);
+        }
+      })
+      .catch(() => undefined)
+      .finally(() => {
+        if (active) setIsAuthLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
   const login = useCallback(async (user: string, pass: string): Promise<boolean> => {
     try {
       const res = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: user, password: pass }),
       });
       if (res.ok) {
         const data = await res.json() as LoginResponse;
-        if (data.success && data.token) {
-          sessionStorage.setItem('devdash_token', data.token);
-          sessionStorage.setItem('devdash_username', data.user.username);
+        if (data.success) {
           setUsername(data.user.username);
           setIsAuthenticated(true);
           return true;
@@ -114,6 +137,7 @@ export const DashboardProvider: React.FC<{ children: ReactNode }> = ({ children 
     <DashboardContext.Provider
       value={{
         isAuthenticated,
+        isAuthLoading,
         username,
         login,
         logout,

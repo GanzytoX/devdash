@@ -41,6 +41,10 @@ const server = app.listen(PORT, async () => {
   await scheduler.start();
 });
 
+server.requestTimeout = 15_000;
+server.headersTimeout = 10_000;
+server.keepAliveTimeout = 5_000;
+
 // Clean shutdown handler
 async function shutdown(signal: string) {
   console.log(`${signal} received. Shutting down cleanly.`);

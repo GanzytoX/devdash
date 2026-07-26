@@ -23,7 +23,12 @@ import {
 } from 'lucide-react';
 
 const App: React.FC = () => {
-  const { activeView, isAuthenticated, processNewLogs } = useDashboard();
+  const {
+    activeView,
+    isAuthenticated,
+    isAuthLoading,
+    processNewLogs,
+  } = useDashboard();
   const { services } = useServices();
   const { logs } = useLogs();
   const { incidents } = useIncidents('7d');
@@ -276,6 +281,14 @@ const App: React.FC = () => {
         return null;
     }
   };
+
+  if (isAuthLoading) {
+    return (
+      <div className="min-h-screen bg-[#040815] text-slate-400 flex items-center justify-center">
+        Verificando sesión…
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     return <LoginView />;

@@ -12,6 +12,7 @@ export interface NotificationItem {
 
 export interface DashboardContextValue {
   isAuthenticated: boolean;
+  isAuthLoading: boolean;
   username: string | null;
   login: (user: string, pass: string) => Promise<boolean>;
   logout: () => void;
