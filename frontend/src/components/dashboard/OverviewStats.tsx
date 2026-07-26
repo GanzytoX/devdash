@@ -8,7 +8,9 @@ export const OverviewStats: React.FC = () => {
 
   // Calculations
   const totalServices = services.length;
-  const activeServices = services.filter(s => s.status === 'online' || s.status === 'degraded').length;
+  const activeServices = services.filter(
+    s => !s.paused && (s.status === 'online' || s.status === 'degraded')
+  ).length;
 
   // Calculate average uptime across active history
   const averageUptime = React.useMemo(() => {

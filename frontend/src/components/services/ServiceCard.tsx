@@ -13,6 +13,9 @@ interface ServiceCardProps {
 export const ServiceCard: React.FC<ServiceCardProps> = ({ service, onEdit }) => {
   const { togglePauseService, deleteService, triggerManualCheck } = useServices();
   const [isPinging, setIsPinging] = useState(false);
+  const serviceTags = Array.from(
+    new Set(service.tags.split(',').map(tag => tag.trim()).filter(Boolean))
+  );
 
   const handleManualPing = async () => {
     if (service.paused) return;
@@ -119,6 +122,19 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service, onEdit }) => 
         </div>
         <PulseBadge status={service.paused ? 'paused' : service.status} />
       </div>
+
+      {serviceTags.length > 0 && (
+        <div className="flex flex-wrap gap-1.5" aria-label="Etiquetas del servicio">
+          {serviceTags.map(tag => (
+            <span
+              key={tag}
+              className="rounded-md border border-brand-blue-500/20 bg-brand-blue-500/10 px-2 py-1 text-[9px] font-mono text-brand-blue-300"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
 
       {/* Latency & History Row */}
       <div className="flex items-center justify-between my-4 border-t border-white/5 pt-4">

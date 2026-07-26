@@ -78,6 +78,7 @@ export const App: React.FC = () => {
 
                 <div className="flex-1 overflow-y-auto space-y-4 pr-1 text-xs">
                   {services.map(s => {
+                    const effectiveStatus = s.paused ? 'paused' : s.status;
                     // Weighting: 60% current instant status + 40% historical uptime consistency (last 30 checks)
                     const currentWeight = s.status === 'offline' ? 0 : s.status === 'degraded' ? 80 : 100;
                     const successfulChecks = s.uptimeHistory.filter(Boolean).length;
@@ -92,26 +93,36 @@ export const App: React.FC = () => {
                         <div className="flex items-center justify-between">
                           <span className="font-bold text-slate-200">{s.name}</span>
                           <span className={`font-mono text-[10px] font-bold ${
-                            s.status === 'online'
+                            effectiveStatus === 'paused'
+                              ? 'text-slate-400'
+                              : effectiveStatus === 'online'
                               ? 'text-emerald-400'
-                              : s.status === 'degraded'
+                              : effectiveStatus === 'degraded'
                               ? 'text-amber-400'
                               : 'text-red-400'
                           }`}>
-                            {s.status === 'online' ? 'EN LÍNEA' : s.status === 'degraded' ? 'DEGRADADO' : 'CAÍDO'}
+                            {effectiveStatus === 'paused'
+                              ? 'PAUSADO'
+                              : effectiveStatus === 'online'
+                                ? 'EN LÍNEA'
+                                : effectiveStatus === 'degraded'
+                                  ? 'DEGRADADO'
+                                  : 'CAÍDO'}
                           </span>
                         </div>
 
                         {/* Custom progress indicators */}
                         <div className="space-y-1">
                           <div className="flex justify-between text-[9px] font-mono text-slate-400">
-                            <span>Puntuación de salud:</span>
+                            <span>{s.paused ? 'Última puntuación:' : 'Puntuación de salud:'}</span>
                             <span>{healthPercent}%</span>
                           </div>
                           <div className="w-full bg-slate-950/60 rounded-full h-1.5 overflow-hidden">
                             <div
                               className={`h-full rounded-full transition-all duration-500 ${
-                                healthPercent >= 90
+                                s.paused
+                                  ? 'bg-slate-500'
+                                  : healthPercent >= 90
                                   ? 'bg-emerald-500'
                                   : healthPercent >= 70
                                   ? 'bg-amber-500'
