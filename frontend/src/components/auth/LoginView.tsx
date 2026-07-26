@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
-import { useDashboard } from '../../context/DashboardContext';
-import { Zap, Lock, User, AlertCircle } from 'lucide-react';
+import React, { useState } from "react";
+import { useDashboard } from "../../context/DashboardContext";
+import { Zap, Lock, User, AlertCircle } from "lucide-react";
 
 export const LoginView: React.FC = () => {
   const { login } = useDashboard();
-  const [usernameInput, setUsernameInput] = useState('');
-  const [passwordInput, setPasswordInput] = useState('');
+  const [usernameInput, setUsernameInput] = useState("");
+  const [passwordInput, setPasswordInput] = useState("");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!usernameInput.trim() || !passwordInput) {
-      setErrorMsg('Por favor, ingresa el usuario y la contraseña.');
+      setErrorMsg("Por favor, ingresa el usuario y la contraseña.");
       return;
     }
 
@@ -21,7 +21,7 @@ export const LoginView: React.FC = () => {
 
     const success = await login(usernameInput.trim(), passwordInput);
     if (!success) {
-      setErrorMsg('Usuario o contraseña incorrectos.');
+      setErrorMsg("Usuario o contraseña incorrectos.");
       setLoading(false);
     }
   };
@@ -49,7 +49,6 @@ export const LoginView: React.FC = () => {
         {/* Login Card */}
         <div className="glass-panel border border-white/5 rounded-2xl p-8 bg-slate-950/40 relative">
           <form onSubmit={handleSubmit} className="space-y-6">
-
             {/* Username Input */}
             <div className="space-y-2">
               <label className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400">
@@ -60,7 +59,7 @@ export const LoginView: React.FC = () => {
                 <input
                   type="text"
                   value={usernameInput}
-                  onChange={e => setUsernameInput(e.target.value)}
+                  onChange={(e) => setUsernameInput(e.target.value)}
                   className="w-full pl-10 pr-4 py-2.5 bg-slate-950/60 border border-white/5 hover:border-white/10 focus:border-brand-blue-500 focus:outline-none rounded-xl text-slate-200 font-sans text-xs transition-colors"
                   placeholder="usuario"
                   autoComplete="username"
@@ -79,7 +78,7 @@ export const LoginView: React.FC = () => {
                 <input
                   type="password"
                   value={passwordInput}
-                  onChange={e => setPasswordInput(e.target.value)}
+                  onChange={(e) => setPasswordInput(e.target.value)}
                   className="w-full pl-10 pr-4 py-2.5 bg-slate-950/60 border border-white/5 hover:border-white/10 focus:border-brand-blue-500 focus:outline-none rounded-xl text-slate-200 font-sans text-xs transition-colors"
                   placeholder="••••••••"
                   autoComplete="current-password"
@@ -105,14 +104,15 @@ export const LoginView: React.FC = () => {
               {loading ? (
                 <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
               ) : (
-                'Iniciar Sesión'
+                "Iniciar Sesión"
               )}
             </button>
-
           </form>
         </div>
 
-        <p className="mt-6 text-center text-[10px] font-mono text-slate-500">Acceso seguro para operadores · Alojado en CubePath</p>
+        <p className="mt-6 text-center text-[10px] font-mono text-slate-500">
+          Alojado en CubePath
+        </p>
       </div>
     </div>
   );
