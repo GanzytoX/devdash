@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "rimraf dist && tsc",
-    "test": "pnpm build && node --test dist/security.test.js",
+    "test": "pnpm build && node --test dist/*.test.js",
     "admin:reset": "pnpm build && node dist/reset-admin.js",
     "start": "node dist/server.js",
     "prisma:generate": "prisma generate",

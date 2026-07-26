@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { prisma } from "../db";
+import { buildIncidentCsv } from "../utils/incidentCsv";
 
 const router = Router();
 
@@ -15,9 +16,17 @@ router.get('/api/incidents', async (req, res) => {
 
 router.get('/api/incidents/export.csv', async (_req, res) => {
   const incidents = await prisma.incident.findMany({ include: { service: { select: { name: true } } }, orderBy: { startedAt: 'desc' } });
-  const escape = (v: unknown) => `"${String(v ?? '').replaceAll('"', '""')}"`;
-  const rows = [['service','type','status','startedAt','resolvedAt','durationSeconds','message'], ...incidents.map(i => [i.service.name, i.type, i.status, i.startedAt.toISOString(), i.resolvedAt?.toISOString() || '', i.durationMs ? Math.round(i.durationMs / 1000) : '', i.message])];
-  res.type('text/csv').attachment('devdash-incidents.csv').send(rows.map(r => r.map(escape).join(',')).join('\n'));
+  const csv = buildIncidentCsv(incidents.map(incident => ({
+    serviceName: incident.service.name,
+    type: incident.type,
+    status: incident.status,
+    startedAt: incident.startedAt,
+    resolvedAt: incident.resolvedAt,
+    durationMs: incident.durationMs,
+    message: incident.message,
+  })));
+  res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+  res.attachment('devdash-incidents.csv').send(csv);
 });
 
 export default router;
