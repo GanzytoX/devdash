@@ -1,0 +1,83 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Represents a Monitored Endpoint / Service
+model Service {
+  id             String       @id @default(uuid())
+  name           String
+  url            String
+  method         String       // GET, POST, HEAD
+  status         String       // online, offline, degraded
+  latency        Int          // Last measured latency in ms
+  sslStatus      String       // valid, expiring, expired, invalid, unknown, none
+  sslExpiryDays  Int?
+  sslExpiryDate  String?
+  interval       Int          // Check frequency in seconds (e.g. 30, 60, 300)
+  paused         Boolean      @default(false)
+  publicVisible  Boolean      @default(true)
+  tags           String       @default("")
+  lastChecked    String?      // Time of last check
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  pingResults    PingResult[] // Latency and availability history records
+  logs           LogEntry[]   // Linked system event logs
+  incidents      Incident[]
+}
+
+// Check records to plot latencies (Recharts) and uptime cells (30 blocks)
+model PingResult {
+  id          String   @id @default(uuid())
+  serviceId   String
+  timestamp   DateTime @default(now())
+  latency     Int
+  status      String   // online, offline, degraded
+
+  service     Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@index([serviceId, timestamp])
+}
+
+// System events history displayed in the Terminal Console
+model LogEntry {
+  id          String   @id @default(uuid())
+  timestamp   String   // Human-readable time format "HH:MM:SS"
+  type        String   // info, success, warn, error
+  message     String
+  serviceId   String?
+  serviceName String?
+  createdAt   DateTime @default(now())
+
+  service     Service? @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@index([createdAt])
+}
+
+model Incident {
+  id          String    @id @default(uuid())
+  serviceId   String
+  type        String
+  status      String    @default("open")
+  message     String
+  startedAt   DateTime  @default(now())
+  resolvedAt  DateTime?
+  durationMs  Int?
+  service     Service   @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@index([serviceId, startedAt])
+  @@index([status, startedAt])
+}
+
+// User account details for dashboard authentication
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  password  String   // Hashed password
+  createdAt DateTime @default(now())
+}
