@@ -10,6 +10,19 @@ interface ConsoleLine {
   type: 'info' | 'success' | 'warn' | 'error' | 'input' | 'output';
 }
 
+const sslStatusLabel = (status: string) => {
+  switch (status) {
+    case 'valid': return 'VÁLIDO';
+    case 'expiring': return 'EXPIRANDO';
+    case 'expired': return 'EXPIRADO';
+    case 'invalid': return 'NO CONFIABLE';
+    case 'unknown': return 'NO DISPONIBLE';
+    default: return 'NINGUNO';
+  }
+};
+
+const logSourceLabel = (serviceName: string | null) => serviceName || 'Sistema';
+
 export const TerminalConsole: React.FC = () => {
   const { services, triggerManualCheck } = useServices();
   const { logs, clearLogs } = useLogs();
@@ -30,7 +43,7 @@ export const TerminalConsole: React.FC = () => {
   }, [consoleLines, logs]);
 
   const handleCopyOutput = () => {
-    const systemLogsText = logs.map(log => `[${log.timestamp}] [${log.serviceName}] ${log.message}`).join('\n');
+    const systemLogsText = logs.map(log => `[${log.timestamp}] [${logSourceLabel(log.serviceName)}] ${log.message}`).join('\n');
     const separator = consoleLines.length > 0 && logs.length > 0 ? '\n--- PROCESADOR DE COMANDOS DE DIAGNÓSTICO ---\n' : '';
     const consoleLinesText = consoleLines.map(line => line.text).join('\n');
     const fullOutputText = systemLogsText + separator + consoleLinesText;
@@ -82,7 +95,7 @@ export const TerminalConsole: React.FC = () => {
         services.forEach(s => {
           const statusChar = s.paused ? '⏸️' : s.status === 'online' ? '🟢' : s.status === 'degraded' ? '⚠️' : '🔴';
           const latencyStr = s.status === 'offline' ? 'N/D' : `${s.latency}ms`;
-          const sslStr = s.sslStatus === 'valid' ? 'VÁLIDO' : s.sslStatus === 'expiring' ? 'EXPIRANDO' : s.sslStatus === 'expired' ? 'EXPIRADO' : 'NINGUNO';
+          const sslStr = sslStatusLabel(s.sslStatus);
           addConsoleLine(`[${s.id}] ${statusChar} ${s.name.padEnd(28)} | Ping: ${latencyStr.padEnd(6)} | SSL: ${sslStr}`, 'info');
         });
         break;
@@ -178,7 +191,7 @@ export const TerminalConsole: React.FC = () => {
         {logs.map((log) => (
           <div key={log.id} className="flex items-start gap-2 leading-relaxed">
             <span className="text-slate-500 font-bold shrink-0">[{log.timestamp}]</span>
-            <span className="text-brand-blue-400 font-semibold shrink-0">[{log.serviceName}]</span>
+            <span className="text-brand-blue-400 font-semibold shrink-0">[{logSourceLabel(log.serviceName)}]</span>
             <span className={getLogTypeColor(log.type)}>{log.message}</span>
           </div>
         ))}

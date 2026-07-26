@@ -168,9 +168,15 @@ export class PingerScheduler {
       } else if (sslResult.sslStatus === 'expiring') {
         logType = 'warn';
         message = `ADVERTENCIA: El certificado SSL expira pronto (en ${sslResult.sslExpiryDays} días: ${sslResult.sslExpiryDate})`;
-      } else {
+      } else if (sslResult.sslStatus === 'expired') {
         logType = 'error';
-        message = `PELIGRO: El certificado SSL ha expirado o está dañado.`;
+        message = `PELIGRO: El certificado SSL ha expirado.`;
+      } else if (sslResult.sslStatus === 'invalid') {
+        logType = 'error';
+        message = `PELIGRO: El certificado SSL no es confiable o no es válido para este servicio.`;
+      } else {
+        logType = 'warn';
+        message = `No se pudo comprobar temporalmente el certificado SSL porque el servicio no respondió.`;
       }
 
       await prisma.logEntry.create({

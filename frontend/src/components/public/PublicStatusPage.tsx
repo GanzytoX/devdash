@@ -15,7 +15,14 @@ interface PublicPayload {
 
 const fetcher = (url: string) => fetch(url).then(async r => { if (!r.ok) throw new Error('La API de estado no está disponible'); return r.json(); });
 const statusLabel = (status: string) => ({ online: 'En línea', offline: 'Fuera de línea', degraded: 'Degradado', paused: 'Pausado', unknown: 'Pendiente', open: 'Abierto', resolved: 'Resuelto' }[status] || status);
-const sslLabel = (status: string) => ({ valid: 'Válido', expiring: 'Próximo a vencer', expired: 'Vencido', none: 'Sin SSL' }[status] || status);
+const sslLabel = (status: string) => ({
+  valid: 'Válido',
+  expiring: 'Próximo a vencer',
+  expired: 'Vencido',
+  invalid: 'No confiable',
+  unknown: 'No disponible',
+  none: 'Sin SSL',
+}[status] || status);
 
 export function PublicStatusPage() {
   const params = new URLSearchParams(window.location.search);

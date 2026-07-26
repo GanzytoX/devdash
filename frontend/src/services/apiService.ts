@@ -9,7 +9,7 @@ export interface Service {
   latency: number;
   latencyHistory: number[];
   uptimeHistory: boolean[]; // Last 30 checks
-  sslStatus: 'valid' | 'expiring' | 'expired' | 'none';
+  sslStatus: 'valid' | 'expiring' | 'expired' | 'invalid' | 'unknown' | 'none';
   sslExpiryDays: number | null;
   sslExpiryDate: string | null;
   interval: number; // in seconds
@@ -33,8 +33,8 @@ export interface Incident {
 export interface LogEntry {
   id: string;
   timestamp: string;
-  serviceId: string;
-  serviceName: string;
+  serviceId: string | null;
+  serviceName: string | null;
   type: 'info' | 'success' | 'warn' | 'error';
   message: string;
 }

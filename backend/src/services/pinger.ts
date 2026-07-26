@@ -10,7 +10,7 @@ export interface PingResultInfo {
 }
 
 export interface SSLResultInfo {
-  sslStatus: 'valid' | 'expiring' | 'expired' | 'none';
+  sslStatus: 'valid' | 'expiring' | 'expired' | 'invalid' | 'unknown' | 'none';
   sslExpiryDays: number | null;
   sslExpiryDate: string | null;
 }
@@ -84,9 +84,11 @@ export function checkSSL(urlString: string): Promise<SSLResultInfo> {
             const diffTime = expiryDate.getTime() - now.getTime();
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-            let sslStatus: 'valid' | 'expiring' | 'expired' = 'valid';
-            if (!socket.authorized || diffDays <= 0) {
+            let sslStatus: SSLResultInfo['sslStatus'] = 'valid';
+            if (diffDays <= 0) {
               sslStatus = 'expired';
+            } else if (!socket.authorized) {
+              sslStatus = 'invalid';
             } else if (diffDays < 15) {
               sslStatus = 'expiring';
             }
@@ -100,22 +102,22 @@ export function checkSSL(urlString: string): Promise<SSLResultInfo> {
             return;
           }
         }
-        resolve({ sslStatus: 'expired', sslExpiryDays: 0, sslExpiryDate: 'Error' });
+        resolve({ sslStatus: 'unknown', sslExpiryDays: null, sslExpiryDate: null });
         req.destroy();
       });
 
       req.on('error', () => {
-        resolve({ sslStatus: 'expired', sslExpiryDays: 0, sslExpiryDate: 'Error' });
+        resolve({ sslStatus: 'unknown', sslExpiryDays: null, sslExpiryDate: null });
       });
 
       req.on('timeout', () => {
-        resolve({ sslStatus: 'expired', sslExpiryDays: 0, sslExpiryDate: 'Timeout' });
+        resolve({ sslStatus: 'unknown', sslExpiryDays: null, sslExpiryDate: null });
         req.destroy();
       });
 
       req.end();
     } catch (e) {
-      resolve({ sslStatus: 'expired', sslExpiryDays: 0, sslExpiryDate: 'Error' });
+      resolve({ sslStatus: 'unknown', sslExpiryDays: null, sslExpiryDate: null });
     }
   });
 }

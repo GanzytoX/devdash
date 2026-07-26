@@ -15,7 +15,7 @@ model Service {
   method         String       // GET, POST, HEAD
   status         String       // online, offline, degraded
   latency        Int          // Last measured latency in ms
-  sslStatus      String       // valid, expiring, expired, none
+  sslStatus      String       // valid, expiring, expired, invalid, unknown, none
   sslExpiryDays  Int?
   sslExpiryDate  String?
   interval       Int          // Check frequency in seconds (e.g. 30, 60, 300)

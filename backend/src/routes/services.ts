@@ -156,6 +156,7 @@ router.delete("/api/services/:id", async (req, res) => {
         timestamp: timestampStr,
         type: "info",
         message: `Servicio eliminado permanentemente: ${existing.name}`,
+        serviceName: existing.name,
       },
     });
 

@@ -68,11 +68,29 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service, onEdit }) => 
 
   // SSL status styling
   const renderSslStatus = () => {
-    if (service.sslStatus === 'none' || service.sslExpiryDays === null) {
+    if (service.sslStatus === 'none') {
       return (
         <div className="flex items-center gap-1.5 text-slate-500 font-mono text-[10px]" title="Sin cifrado SSL">
           <ShieldOff className="h-3.5 w-3.5" />
           <span>HTTP</span>
+        </div>
+      );
+    }
+
+    if (service.sslStatus === 'unknown') {
+      return (
+        <div className="flex items-center gap-1.5 text-slate-400 font-mono text-[10px]" title="No se pudo comprobar el certificado SSL">
+          <ShieldAlert className="h-3.5 w-3.5" />
+          <span>SSL: N/D</span>
+        </div>
+      );
+    }
+
+    if (service.sslStatus === 'invalid') {
+      return (
+        <div className="flex items-center gap-1.5 text-red-400 font-mono text-[10px] font-bold" title="El certificado SSL no es confiable">
+          <ShieldAlert className="h-3.5 w-3.5 text-red-500" />
+          <span>NO CONFIABLE</span>
         </div>
       );
     }
@@ -93,6 +111,10 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service, onEdit }) => 
           <span>EXPIRA: {service.sslExpiryDays}d</span>
         </div>
       );
+    }
+
+    if (service.sslExpiryDays === null) {
+      return null;
     }
 
     return (
