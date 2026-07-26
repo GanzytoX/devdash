@@ -1,0 +1,19 @@
+{
+  "name": "DevDash · Monitoreo autohospedado",
+  "short_name": "DevDash",
+  "description": "Monitoreo autohospedado de disponibilidad, latencia, certificados SSL e incidentes.",
+  "lang": "es-MX",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#040815",
+  "theme_color": "#040815",
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
