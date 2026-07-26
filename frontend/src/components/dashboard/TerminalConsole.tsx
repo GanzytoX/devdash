@@ -4,6 +4,7 @@ import { useLogs } from '../../hooks/useLogs';
 import { fetchWithAuth, API_URL } from '../../lib/fetcher';
 import { GlassCard } from '../common/GlassCard';
 import { Terminal, Trash2, Copy, Check } from 'lucide-react';
+import { useDashboard } from '../../hooks/useDashboard';
 
 interface ConsoleLine {
   text: string;
@@ -26,6 +27,7 @@ const logSourceLabel = (serviceName: string | null) => serviceName || 'Sistema';
 export const TerminalConsole: React.FC = () => {
   const { services, triggerManualCheck } = useServices();
   const { logs, clearLogs } = useLogs();
+  const { isDemo } = useDashboard();
   const [commandInput, setCommandInput] = useState('');
   const [copied, setCopied] = useState(false);
   const [consoleLines, setConsoleLines] = useState<ConsoleLine[]>([
@@ -81,7 +83,12 @@ export const TerminalConsole: React.FC = () => {
         addConsoleLine('  help               Muestra esta ayuda', 'info');
         addConsoleLine('  clear              Limpia la terminal de comandos manuales', 'info');
         addConsoleLine('  services           Lista todos los servicios monitoreados y su estado', 'info');
-        addConsoleLine('  ping <url/name>    Ejecuta un diagnóstico ICMP sobre el host', 'info');
+        addConsoleLine(
+          isDemo
+            ? '  ping <url/name>    Disponible únicamente para administradores'
+            : '  ping <url/name>    Ejecuta una comprobación HTTP/SSL del servicio',
+          'info',
+        );
         addConsoleLine('  status             Muestra el diagnóstico de recursos del host autohospedado', 'info');
         break;
 
@@ -125,6 +132,10 @@ export const TerminalConsole: React.FC = () => {
         break;
 
       case 'ping': {
+        if (isDemo) {
+          addConsoleLine('El modo demostración es de solo lectura. La comprobación manual está deshabilitada.', 'warn');
+          break;
+        }
         if (args.length === 0) {
           addConsoleLine('Error: Debes especificar un host o nombre de servicio. Ej: ping github.com', 'error');
           break;
@@ -176,13 +187,15 @@ export const TerminalConsole: React.FC = () => {
           >
             {copied ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
           </button>
-          <button
-            onClick={clearLogs}
-            className="p-1 rounded-lg border border-white/5 hover:border-white/10 text-slate-400 hover:text-slate-200 transition-colors cursor-pointer flex items-center justify-center"
-            title="Limpiar logs del sistema"
-          >
-            <Trash2 className="h-3.5 w-3.5" />
-          </button>
+          {!isDemo && (
+            <button
+              onClick={clearLogs}
+              className="p-1 rounded-lg border border-white/5 hover:border-white/10 text-slate-400 hover:text-slate-200 transition-colors cursor-pointer flex items-center justify-center"
+              title="Limpiar logs del sistema"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </button>
+          )}
         </div>
       </div>
 

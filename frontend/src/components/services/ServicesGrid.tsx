@@ -3,6 +3,7 @@ import { useServices } from '../../hooks/useServices';
 import { ServiceCard } from './ServiceCard';
 import type { Service } from '../../services/apiService';
 import { Plus } from 'lucide-react';
+import { useDashboard } from '../../hooks/useDashboard';
 
 interface ServicesGridProps {
   onAddClick: () => void;
@@ -11,6 +12,7 @@ interface ServicesGridProps {
 
 export const ServicesGrid: React.FC<ServicesGridProps> = ({ onAddClick, onEditClick }) => {
   const { services } = useServices();
+  const { isDemo } = useDashboard();
   const [statusFilter, setStatusFilter] = useState<'all' | 'online' | 'offline' | 'degraded' | 'paused'>('all');
 
   // Filter services by selected status pill
@@ -55,13 +57,15 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({ onAddClick, onEditCl
         </div>
 
         {/* Add Service Trigger Button */}
-        <button
-          onClick={onAddClick}
-          className="glass-btn-primary flex items-center gap-2 px-4 py-2 text-xs font-sans cursor-pointer"
-        >
-          <Plus className="h-4 w-4" />
-          <span>Añadir servicio</span>
-        </button>
+        {!isDemo && (
+          <button
+            onClick={onAddClick}
+            className="glass-btn-primary flex items-center gap-2 px-4 py-2 text-xs font-sans cursor-pointer"
+          >
+            <Plus className="h-4 w-4" />
+            <span>Añadir servicio</span>
+          </button>
+        )}
       </div>
 
       {/* Services Cards Grid Layout */}
@@ -72,7 +76,9 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({ onAddClick, onEditCl
           </p>
           <p className="text-xs text-slate-500 font-sans">
             {services.length === 0
-              ? 'Añade tu primer servicio para comenzar a monitorear su disponibilidad.'
+              ? isDemo
+                ? 'El administrador aún no ha agregado servicios para la demostración.'
+                : 'Añade tu primer servicio para comenzar a monitorear su disponibilidad.'
               : 'Selecciona otro filtro para consultar los servicios disponibles.'}
           </p>
         </div>

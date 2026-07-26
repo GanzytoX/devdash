@@ -25,7 +25,9 @@ import {
 const AuthenticatedApp: React.FC = () => {
   const {
     activeView,
+    isDemo,
     processNewLogs,
+    setActiveView,
   } = useDashboard();
   const { services } = useServices();
   const { logs } = useLogs();
@@ -36,6 +38,12 @@ const AuthenticatedApp: React.FC = () => {
       processNewLogs(logs);
     }
   }, [logs, processNewLogs]);
+
+  useEffect(() => {
+    if (isDemo && activeView === 'settings') {
+      setActiveView('dashboard');
+    }
+  }, [activeView, isDemo, setActiveView]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
@@ -326,7 +334,7 @@ const AuthenticatedApp: React.FC = () => {
       }
 
       case 'settings':
-        return <SettingsPanel />;
+        return isDemo ? null : <SettingsPanel />;
 
       default:
         return null;
@@ -344,6 +352,12 @@ const AuthenticatedApp: React.FC = () => {
 
         {/* Render selected route panel */}
         <main className="flex-1 p-4 md:p-8 max-w-7xl w-full mx-auto">
+          {isDemo && (
+            <div className="mb-6 rounded-xl border border-brand-blue-500/20 bg-brand-blue-500/10 px-4 py-3 text-xs text-brand-blue-100">
+              <strong className="font-mono uppercase tracking-wider">Modo demostración</strong>
+              <span className="text-brand-blue-200"> · Explora métricas reales con acceso de solo lectura.</span>
+            </div>
+          )}
           {renderView()}
         </main>
 
@@ -351,11 +365,13 @@ const AuthenticatedApp: React.FC = () => {
       </div>
 
       {/* Glassmorphic Endpoint Form Modal */}
-      <ServiceFormModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        editingService={selectedService}
-      />
+      {!isDemo && (
+        <ServiceFormModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          editingService={selectedService}
+        />
+      )}
     </div>
   );
 };

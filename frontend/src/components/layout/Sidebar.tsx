@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 
 export const Sidebar: React.FC = () => {
-  const { activeView, setActiveView } = useDashboard();
+  const { activeView, setActiveView, isDemo } = useDashboard();
   const { vpsUptime, serverStatus } = useSystemStats();
 
   const menuItems = [
@@ -18,7 +18,7 @@ export const Sidebar: React.FC = () => {
     { id: "services" as const, label: "Servicios", icon: Server },
     { id: "analytics" as const, label: "Analíticas", icon: BarChart3 },
     { id: "settings" as const, label: "Ajustes", icon: Settings },
-  ];
+  ].filter(item => !isDemo || item.id !== 'settings');
 
   return (
     <aside className="w-20 md:w-64 glass-panel border-r border-y-0 border-l-0 flex flex-col h-screen sticky top-0 shrink-0 z-20">

@@ -5,6 +5,8 @@
 - [ ] La aplicación está desplegada y funcionando en CubePath.
 - [ ] La página pública `/status` puede abrirse sin autenticación.
 - [ ] El inicio de sesión administrativo funciona.
+- [ ] El acceso de demostración funciona sin contraseña y muestra un UUID.
+- [ ] La cuenta demo puede consultar datos, pero recibe `403` al intentar modificarlos.
 - [ ] Se probó al menos un servicio HTTP o HTTPS real.
 - [ ] Los incidentes, registros y diagnósticos muestran datos reales.
 - [ ] El volumen `devdash_data` conserva la base de datos tras reiniciar.

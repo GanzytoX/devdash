@@ -4,6 +4,7 @@ import { useServices } from '../../hooks/useServices';
 import { PulseBadge } from '../common/PulseBadge';
 import { GlassCard } from '../common/GlassCard';
 import { Play, Pause, Trash2, Edit3, Shield, ShieldAlert, ShieldOff, RefreshCw } from 'lucide-react';
+import { useDashboard } from '../../hooks/useDashboard';
 
 interface ServiceCardProps {
   service: Service;
@@ -12,6 +13,7 @@ interface ServiceCardProps {
 
 export const ServiceCard: React.FC<ServiceCardProps> = ({ service, onEdit }) => {
   const { togglePauseService, deleteService, triggerManualCheck } = useServices();
+  const { isDemo } = useDashboard();
   const [isPinging, setIsPinging] = useState(false);
   const serviceTags = Array.from(
     new Set(service.tags.split(',').map(tag => tag.trim()).filter(Boolean))
@@ -224,42 +226,44 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service, onEdit }) => 
         {renderSslStatus()}
 
         {/* Quick controls */}
-        <div className="flex items-center gap-1">
-          <button
-            onClick={handleManualPing}
-            disabled={service.paused}
-            className={`p-1.5 rounded-lg border border-white/5 bg-white/5 text-slate-400 hover:text-slate-200 transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer ${
-              isPinging ? 'animate-spin' : ''
-            }`}
-            title="Ping instantáneo"
-          >
-            <RefreshCw className="h-3.5 w-3.5" />
-          </button>
+        {!isDemo && (
+          <div className="flex items-center gap-1">
+            <button
+              onClick={handleManualPing}
+              disabled={service.paused}
+              className={`p-1.5 rounded-lg border border-white/5 bg-white/5 text-slate-400 hover:text-slate-200 transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer ${
+                isPinging ? 'animate-spin' : ''
+              }`}
+              title="Ping instantáneo"
+            >
+              <RefreshCw className="h-3.5 w-3.5" />
+            </button>
 
-          <button
-            onClick={() => togglePauseService(service.id)}
-            className="p-1.5 rounded-lg border border-white/5 bg-white/5 text-slate-400 hover:text-slate-200 transition-colors cursor-pointer"
-            title={service.paused ? 'Reanudar monitoreo' : 'Pausar monitoreo'}
-          >
-            {service.paused ? <Play className="h-3.5 w-3.5" /> : <Pause className="h-3.5 w-3.5" />}
-          </button>
+            <button
+              onClick={() => togglePauseService(service.id)}
+              className="p-1.5 rounded-lg border border-white/5 bg-white/5 text-slate-400 hover:text-slate-200 transition-colors cursor-pointer"
+              title={service.paused ? 'Reanudar monitoreo' : 'Pausar monitoreo'}
+            >
+              {service.paused ? <Play className="h-3.5 w-3.5" /> : <Pause className="h-3.5 w-3.5" />}
+            </button>
 
-          <button
-            onClick={() => onEdit(service)}
-            className="p-1.5 rounded-lg border border-white/5 bg-white/5 text-slate-400 hover:text-slate-200 transition-colors cursor-pointer"
-            title="Editar servicio"
-          >
-            <Edit3 className="h-3.5 w-3.5" />
-          </button>
+            <button
+              onClick={() => onEdit(service)}
+              className="p-1.5 rounded-lg border border-white/5 bg-white/5 text-slate-400 hover:text-slate-200 transition-colors cursor-pointer"
+              title="Editar servicio"
+            >
+              <Edit3 className="h-3.5 w-3.5" />
+            </button>
 
-          <button
-            onClick={() => window.confirm(`¿Eliminar ${service.name}? Esta acción también elimina su historial.`) && deleteService(service.id)}
-            className="p-1.5 rounded-lg border border-white/5 bg-white/5 text-red-400/80 hover:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer"
-            title="Eliminar servicio"
-          >
-            <Trash2 className="h-3.5 w-3.5" />
-          </button>
-        </div>
+            <button
+              onClick={() => window.confirm(`¿Eliminar ${service.name}? Esta acción también elimina su historial.`) && deleteService(service.id)}
+              className="p-1.5 rounded-lg border border-white/5 bg-white/5 text-red-400/80 hover:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer"
+              title="Eliminar servicio"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        )}
       </div>
     </GlassCard>
   );

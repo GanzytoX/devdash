@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { useDashboard } from "../../hooks/useDashboard";
-import { Zap, Lock, User, AlertCircle } from "lucide-react";
+import { Zap, Lock, User, AlertCircle, Eye } from "lucide-react";
 
 export const LoginView: React.FC = () => {
-  const { login } = useDashboard();
+  const { login, loginAsDemo } = useDashboard();
   const [usernameInput, setUsernameInput] = useState("");
   const [passwordInput, setPasswordInput] = useState("");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<'credentials' | 'demo' | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,12 +17,22 @@ export const LoginView: React.FC = () => {
     }
 
     setErrorMsg(null);
-    setLoading(true);
+    setLoading('credentials');
 
     const success = await login(usernameInput.trim(), passwordInput);
     if (!success) {
       setErrorMsg("Usuario o contraseña incorrectos.");
-      setLoading(false);
+      setLoading(null);
+    }
+  };
+
+  const handleDemoLogin = async () => {
+    setErrorMsg(null);
+    setLoading('demo');
+    const success = await loginAsDemo();
+    if (!success) {
+      setErrorMsg('El modo demostración no está disponible temporalmente.');
+      setLoading(null);
     }
   };
 
@@ -63,7 +73,7 @@ export const LoginView: React.FC = () => {
                   className="w-full pl-10 pr-4 py-2.5 bg-slate-950/60 border border-white/5 hover:border-white/10 focus:border-brand-blue-500 focus:outline-none rounded-xl text-slate-200 font-sans text-xs transition-colors"
                   placeholder="usuario"
                   autoComplete="username"
-                  disabled={loading}
+                  disabled={loading !== null}
                 />
               </div>
             </div>
@@ -82,7 +92,7 @@ export const LoginView: React.FC = () => {
                   className="w-full pl-10 pr-4 py-2.5 bg-slate-950/60 border border-white/5 hover:border-white/10 focus:border-brand-blue-500 focus:outline-none rounded-xl text-slate-200 font-sans text-xs transition-colors"
                   placeholder="••••••••"
                   autoComplete="current-password"
-                  disabled={loading}
+                  disabled={loading !== null}
                 />
               </div>
             </div>
@@ -98,16 +108,36 @@ export const LoginView: React.FC = () => {
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading !== null}
               className="w-full py-3 bg-gradient-to-r from-brand-blue-600 to-brand-blue-500 hover:from-brand-blue-500 hover:to-brand-blue-400 text-white font-mono text-xs font-bold rounded-xl transition-all duration-300 shadow-md shadow-brand-blue-600/25 hover:shadow-brand-blue-500/40 transform active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2"
             >
-              {loading ? (
+              {loading === 'credentials' ? (
                 <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
               ) : (
                 "Iniciar Sesión"
               )}
             </button>
           </form>
+
+          <div className="my-5 flex items-center gap-3">
+            <span className="h-px flex-1 bg-white/5" />
+            <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500">o explora sin modificar datos</span>
+            <span className="h-px flex-1 bg-white/5" />
+          </div>
+
+          <button
+            type="button"
+            onClick={handleDemoLogin}
+            disabled={loading !== null}
+            className="w-full py-3 border border-brand-blue-500/20 bg-brand-blue-500/10 hover:bg-brand-blue-500/15 text-brand-blue-200 font-mono text-xs font-bold rounded-xl transition-colors disabled:opacity-60 cursor-pointer disabled:cursor-wait flex items-center justify-center gap-2"
+          >
+            {loading === 'demo' ? (
+              <div className="h-4 w-4 border-2 border-brand-blue-300 border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <Eye className="h-4 w-4" />
+            )}
+            Entrar en modo demostración
+          </button>
         </div>
 
         <p className="mt-6 text-center text-[10px] font-mono text-slate-500">

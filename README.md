@@ -29,6 +29,7 @@ completamente en español.
 - Verificación y alertas de certificados SSL.
 - Registro automático de incidentes y exportación CSV.
 - Página pública `/status` sin autenticación.
+- Acceso de demostración con un clic y permisos estrictos de solo lectura.
 - Pausa, reanudación, etiquetas y visibilidad por servicio.
 - Alertas opcionales para Slack, Discord y webhooks.
 - Diagnóstico de CPU, memoria, disco y tiempo activo.
@@ -77,6 +78,8 @@ DATABASE_URL=file:/data/devdash.db
 JWT_SECRET=una-clave-aleatoria-de-al-menos-32-caracteres
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=una-contrasena-segura-de-al-menos-12-caracteres
+DEMO_MODE_ENABLED=true
+DEMO_USERNAME=demo
 CORS_ORIGINS=https://estado.tudominio.com
 PUBLIC_APP_URL=https://estado.tudominio.com
 TRUST_PROXY=1
@@ -119,6 +122,8 @@ flowchart LR
 
 - Sesiones mediante cookies `HttpOnly`, `Secure` y `SameSite=Strict`.
 - Contraseñas almacenadas con bcrypt.
+- Usuarios identificados mediante UUID y autorización por roles.
+- Modo demostración protegido en el backend contra operaciones de escritura.
 - CORS y protección contra CSRF.
 - Límites de solicitudes e intentos de acceso.
 - Protección SSRF y bloqueo de redes privadas.

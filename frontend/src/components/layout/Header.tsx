@@ -7,7 +7,9 @@ export const Header: React.FC = () => {
     notifications,
     markNotificationsRead,
     activeView,
+    userId,
     username,
+    isDemo,
     logout,
   } = useDashboard();
 
@@ -136,7 +138,12 @@ export const Header: React.FC = () => {
           </div>
           <div className="hidden md:block">
             <div className="text-xs font-bold text-slate-200 font-sans leading-none">{username || 'Operador'}</div>
-            <div className="text-[9px] font-mono text-slate-400 font-bold uppercase tracking-wider text-brand-blue-400">Administrador</div>
+            <div
+              className="text-[9px] font-mono font-bold uppercase tracking-wider text-brand-blue-400"
+              title={userId ? `UUID: ${userId}` : undefined}
+            >
+              {isDemo ? 'Demostración' : 'Administrador'}{userId ? ` · ${userId.slice(0, 8)}` : ''}
+            </div>
           </div>
           <button
             onClick={logout}

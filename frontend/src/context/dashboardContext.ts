@@ -10,11 +10,17 @@ export interface NotificationItem {
   timestamp: string;
 }
 
+export type UserRole = 'ADMIN' | 'DEMO';
+
 export interface DashboardContextValue {
   isAuthenticated: boolean;
   isAuthLoading: boolean;
+  userId: string | null;
   username: string | null;
+  role: UserRole | null;
+  isDemo: boolean;
   login: (user: string, pass: string) => Promise<boolean>;
+  loginAsDemo: () => Promise<boolean>;
   logout: () => void;
   activeView: 'dashboard' | 'services' | 'analytics' | 'settings';
   notifications: NotificationItem[];

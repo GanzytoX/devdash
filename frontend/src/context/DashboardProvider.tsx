@@ -10,17 +10,24 @@ import {
   DashboardContext,
   type DashboardContextValue,
   type NotificationItem,
+  type UserRole,
 } from './dashboardContext';
 import type { LogEntry } from '../services/apiService';
 
 interface LoginResponse {
   success: boolean;
-  user: { username: string };
+  user: AuthenticatedUser;
 }
 
 interface SessionResponse {
   authenticated: boolean;
-  user: { username: string };
+  user: AuthenticatedUser;
+}
+
+interface AuthenticatedUser {
+  id: string;
+  username: string;
+  role: UserRole;
 }
 
 export const DashboardProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -32,18 +39,32 @@ export const DashboardProvider: React.FC<{ children: ReactNode }> = ({ children 
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
+  const [userId, setUserId] = useState<string | null>(null);
   const [username, setUsername] = useState<string | null>(null);
+  const [role, setRole] = useState<UserRole | null>(null);
+  const isDemo = role === 'DEMO';
 
   // Track previous log IDs for notification diffing
   const prevLogIdsRef = useRef<Set<string>>(new Set());
 
   const setActiveView = useCallback((view: DashboardContextValue['activeView']) => {
-    setActiveViewState(view);
-    window.history.pushState({}, '', view === 'dashboard' ? '/' : `/${view}`);
+    const allowedView = role === 'DEMO' && view === 'settings' ? 'dashboard' : view;
+    setActiveViewState(allowedView);
+    window.history.pushState({}, '', allowedView === 'dashboard' ? '/' : `/${allowedView}`);
+  }, [role]);
+
+  const applyAuthenticatedUser = useCallback((user: AuthenticatedUser) => {
+    resetLogoutDispatch();
+    setUserId(user.id);
+    setUsername(user.username);
+    setRole(user.role);
+    setIsAuthenticated(true);
   }, []);
 
   const logout = useCallback(() => {
+    setUserId(null);
     setUsername(null);
+    setRole(null);
     setIsAuthenticated(false);
     void fetch(`${API_URL}/auth/logout`, {
       method: 'POST',
@@ -64,9 +85,7 @@ export const DashboardProvider: React.FC<{ children: ReactNode }> = ({ children 
         if (!response.ok) return;
         const data = await response.json() as SessionResponse;
         if (active && data.authenticated) {
-          resetLogoutDispatch();
-          setUsername(data.user.username);
-          setIsAuthenticated(true);
+          applyAuthenticatedUser(data.user);
         }
       })
       .catch(() => undefined)
@@ -77,7 +96,13 @@ export const DashboardProvider: React.FC<{ children: ReactNode }> = ({ children 
     return () => {
       active = false;
     };
-  }, []);
+  }, [applyAuthenticatedUser]);
+
+  useEffect(() => {
+    if (role === 'DEMO' && activeViewState === 'settings') {
+      setActiveView('dashboard');
+    }
+  }, [activeViewState, role, setActiveView]);
 
   const login = useCallback(async (user: string, pass: string): Promise<boolean> => {
     try {
@@ -90,9 +115,7 @@ export const DashboardProvider: React.FC<{ children: ReactNode }> = ({ children 
       if (res.ok) {
         const data = await res.json() as LoginResponse;
         if (data.success) {
-          resetLogoutDispatch();
-          setUsername(data.user.username);
-          setIsAuthenticated(true);
+          applyAuthenticatedUser(data.user);
           return true;
         }
       }
@@ -101,7 +124,26 @@ export const DashboardProvider: React.FC<{ children: ReactNode }> = ({ children 
       console.error('Error executing login:', e);
       return false;
     }
-  }, []);
+  }, [applyAuthenticatedUser]);
+
+  const loginAsDemo = useCallback(async (): Promise<boolean> => {
+    try {
+      const res = await fetch(`${API_URL}/auth/demo`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+      if (!res.ok) return false;
+
+      const data = await res.json() as LoginResponse;
+      if (!data.success) return false;
+
+      applyAuthenticatedUser(data.user);
+      return true;
+    } catch (error) {
+      console.error('Error entering demo mode:', error);
+      return false;
+    }
+  }, [applyAuthenticatedUser]);
 
   const processNewLogs = useCallback((logs: LogEntry[]) => {
     if (prevLogIdsRef.current.size > 0) {
@@ -140,8 +182,12 @@ export const DashboardProvider: React.FC<{ children: ReactNode }> = ({ children 
       value={{
         isAuthenticated,
         isAuthLoading,
+        userId,
         username,
+        role,
+        isDemo,
         login,
+        loginAsDemo,
         logout,
         activeView: activeViewState,
         notifications,
