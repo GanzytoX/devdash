@@ -29,9 +29,6 @@ export const Header: React.FC = () => {
 
   const handleNotificationClick = () => {
     setShowNotifications(!showNotifications);
-    if (!showNotifications && unreadCount > 0) {
-      markNotificationsRead();
-    }
   };
 
   const getTitle = () => {
@@ -121,10 +118,11 @@ export const Header: React.FC = () => {
               </div>
               <div className="p-2 border-t border-brand-blue-950/40 bg-slate-900/30 text-center">
                 <button
-                  onClick={() => setShowNotifications(false)}
-                  className="text-[10px] font-mono text-slate-400 hover:text-white transition-colors w-full py-1 cursor-pointer"
+                  onClick={markNotificationsRead}
+                  disabled={unreadCount === 0}
+                  className="text-[10px] font-mono text-brand-blue-300 hover:text-white transition-colors w-full py-1 cursor-pointer disabled:text-slate-500 disabled:cursor-default"
                 >
-                  Cerrar panel
+                  Marcar todo como leído
                 </button>
               </div>
             </div>
