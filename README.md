@@ -44,16 +44,6 @@ completamente en español.
 
 ## 🧱 Arquitectura
 
-```mermaid
-flowchart LR
-  U["Usuario"] --> N["Nginx y React"]
-  N -->|"/api"| A["Express"]
-  A --> D[("Prisma y SQLite")]
-  A --> M["Monitor HTTP y SSL"]
-  M --> S["Servicios externos"]
-  M --> W["Slack, Discord y webhooks"]
-```
-
 - **Frontend:** React 19, TypeScript, Vite, Tailwind CSS, SWR y Recharts.
 - **Backend:** Node.js, Express, TypeScript, Prisma y SQLite.
 - **Infraestructura:** Docker, Docker Compose, Nginx y CubePath.
