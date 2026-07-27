@@ -71,19 +71,6 @@ flowchart LR
 - Protección SSRF y bloqueo de redes privadas.
 - CSP, HSTS y contenedores ejecutados sin privilegios.
 
-## 🏆 Cubethon 2026 Q3
-
-DevDash responde a los criterios del concurso:
-
-- **Utilidad:** monitoreo y comunicación pública en un solo producto.
-- **Originalidad:** combina estado de servicios y diagnóstico real del VPS.
-- **Implementación:** aplicación tipada, persistente, probada y protegida.
-- **Presentación:** panel visual, terminal e historial de incidentes.
-- **CubePath:** monitoreo continuo y persistencia dentro de un VPS de CubePath.
-
-Consulta el [guion de demostración](deploy/docs/DEMO_SCRIPT.md) y la
-[lista de entrega](deploy/docs/SUBMISSION.md).
-
 ## 📄 Licencia
 
 Creado por [GonzaDev](https://github.com/GanzytoX) para **Cubethon 2026 Q3** y
