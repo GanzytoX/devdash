@@ -1,8 +1,6 @@
 # DevDash
 
 [![Hosted on CubePath](https://img.shields.io/badge/Hosted%20on-CubePath-00C853?style=flat-square&logo=cloud&logoColor=white)](https://vps26527.cubepath.net)
-[![Cubethon 2026 Q3](https://img.shields.io/badge/Cubethon-2026%20Q3-2563EB?style=flat-square&logo=trophy&logoColor=white)](https://github.com/CubePathInc/cubethon-2026-Q3)
-[![Live Demo](https://img.shields.io/badge/Demo-En%20producción-7C3AED?style=flat-square&logo=googlechrome&logoColor=white)](https://vps26527.cubepath.net)
 [![License](https://img.shields.io/badge/License-MIT-334155?style=flat-square)](deploy/LICENSE)
 
 DevDash es una plataforma self-hosted para monitorear disponibilidad, latencia,
