@@ -1,6 +1,6 @@
 # DevDash
 
-[![Hosted on CubePath](https://img.shields.io/badge/Hosted%20on-CubePath-00C853?style=flat-square&logo=cloud&logoColor=white)](https://cubepath.com)
+[![Hosted on CubePath](https://img.shields.io/badge/Hosted%20on-CubePath-00C853?style=flat-square&logo=cloud&logoColor=white)](https://vps26527.cubepath.net)
 [![Cubethon 2026 Q3](https://img.shields.io/badge/Cubethon-2026%20Q3-2563EB?style=flat-square&logo=trophy&logoColor=white)](https://github.com/CubePathInc/cubethon-2026-Q3)
 [![Self-hosted](https://img.shields.io/badge/100%25-Self--hosted-7C3AED?style=flat-square&logo=docker&logoColor=white)](#-despliegue)
 [![License](https://img.shields.io/badge/License-MIT-334155?style=flat-square)](deploy/LICENSE)
@@ -9,10 +9,12 @@ DevDash es una plataforma self-hosted para monitorear disponibilidad, latencia,
 certificados SSL, incidentes y recursos de infraestructura desde una interfaz
 completamente en español.
 
+[**Abrir DevDash en producción**](https://vps26527.cubepath.net) ·
+[**Consultar el estado público**](https://vps26527.cubepath.net/status)
+
 > [!IMPORTANT]
-> DevDash participa en **Cubethon 2026 Q3**, está preparado para ejecutarse en
-> un VPS de **CubePath** y muestra de forma visible la leyenda «Alojado en
-> CubePath».
+> DevDash participa en **Cubethon 2026 Q3** y está desplegado y funcionando en
+> un VPS de **CubePath**.
 
 ## 🚀 ¿Por qué DevDash?
 
@@ -80,8 +82,8 @@ ADMIN_USERNAME=admin
 ADMIN_PASSWORD=una-contrasena-segura-de-al-menos-12-caracteres
 DEMO_MODE_ENABLED=true
 DEMO_USERNAME=demo
-CORS_ORIGINS=https://estado.tudominio.com
-PUBLIC_APP_URL=https://estado.tudominio.com
+CORS_ORIGINS=https://vps26527.cubepath.net
+PUBLIC_APP_URL=https://vps26527.cubepath.net
 TRUST_PROXY=1
 SESSION_TTL_MINUTES=480
 ALLOW_PRIVATE_TARGETS=false
@@ -157,4 +159,4 @@ distribuido bajo la [licencia MIT](deploy/LICENSE).
 
 ---
 
-**Alojado en [CubePath](https://cubepath.com).**
+**[DevDash está alojado en CubePath](https://vps26527.cubepath.net).**
