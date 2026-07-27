@@ -63,7 +63,3 @@ completamente en español.
 
 Creado por [GonzaDev](https://github.com/GanzytoX) para **Cubethon 2026 Q3** y
 distribuido bajo la [licencia MIT](deploy/LICENSE).
-
----
-
-**[DevDash está alojado en CubePath](https://vps26527.cubepath.net).**
