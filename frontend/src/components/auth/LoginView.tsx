@@ -37,14 +37,14 @@ export const LoginView: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-[#040815] relative overflow-hidden px-4 select-none">
+    <div className="min-h-screen w-full flex items-center justify-center bg-[#040815] relative overflow-x-hidden overflow-y-auto px-4 py-6 sm:py-10 select-none">
       {/* Decorative gradient background lights */}
       <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] rounded-full bg-brand-blue-700/10 blur-[100px] pointer-events-none animate-pulse"></div>
       <div className="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 w-[400px] h-[400px] rounded-full bg-violet-700/10 blur-[120px] pointer-events-none animate-pulse"></div>
 
       <div className="w-full max-w-[420px] animate-fade-in relative z-10">
         {/* Brand Logo Header */}
-        <div className="flex flex-col items-center mb-8">
+        <div className="flex flex-col items-center mb-5 sm:mb-8">
           <div className="h-12 w-12 rounded-2xl bg-gradient-to-tr from-brand-blue-700 to-brand-blue-600 flex items-center justify-center shadow-lg shadow-brand-blue-700/30 mb-4 animate-bounce-slow">
             <Zap className="h-6 w-6 text-white" />
           </div>
@@ -57,8 +57,8 @@ export const LoginView: React.FC = () => {
         </div>
 
         {/* Login Card */}
-        <div className="glass-panel border border-white/5 rounded-2xl p-8 bg-slate-950/40 relative">
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="glass-panel border border-white/5 rounded-2xl p-5 sm:p-8 bg-slate-950/40 relative">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             {/* Username Input */}
             <div className="space-y-2">
               <label className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400">
@@ -119,9 +119,9 @@ export const LoginView: React.FC = () => {
             </button>
           </form>
 
-          <div className="my-5 flex items-center gap-3">
+          <div className="my-5 flex items-center gap-2 sm:gap-3">
             <span className="h-px flex-1 bg-white/5" />
-            <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500">o explora sin modificar datos</span>
+            <span className="text-[9px] sm:text-[10px] text-center font-mono uppercase tracking-wider text-slate-500">o explora sin modificar datos</span>
             <span className="h-px flex-1 bg-white/5" />
           </div>
 

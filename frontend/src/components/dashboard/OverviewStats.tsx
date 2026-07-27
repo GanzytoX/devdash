@@ -152,7 +152,7 @@ export const OverviewStats: React.FC = () => {
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4 lg:gap-6">
       {stats.map((stat, idx) => {
         const Icon = stat.icon;
         return (
@@ -164,20 +164,20 @@ export const OverviewStats: React.FC = () => {
             {/* Ambient Background Gradient for Hover */}
             <div className="absolute -right-10 -bottom-10 h-32 w-32 rounded-full bg-brand-blue-500/5 blur-3xl group-hover:bg-brand-blue-500/10 transition-colors duration-300" />
 
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-xs font-mono tracking-wider text-slate-400 uppercase">
+            <div className="flex items-start justify-between gap-2 mb-3 sm:mb-4">
+              <span className="text-[9px] sm:text-xs font-mono tracking-wider text-slate-400 uppercase leading-tight">
                 {stat.title}
               </span>
-              <div className={`p-2.5 rounded-xl bg-white/5 border border-white/5 ${stat.color} group-hover:scale-110 transition-transform duration-300`}>
+              <div className={`p-2 sm:p-2.5 rounded-xl bg-white/5 border border-white/5 ${stat.color} group-hover:scale-110 transition-transform duration-300 shrink-0`}>
                 <Icon className="h-4 w-4" />
               </div>
             </div>
 
             <div className="flex flex-col">
-              <span className="text-2xl font-bold font-mono tracking-tight text-white mb-1">
+              <span className="text-lg sm:text-2xl font-bold font-mono tracking-tight text-white mb-1 break-words">
                 {stat.value}
               </span>
-              <span className="text-[10px] text-slate-400 font-sans">
+              <span className="text-[9px] sm:text-[10px] leading-snug text-slate-400 font-sans">
                 {stat.desc}
               </span>
             </div>

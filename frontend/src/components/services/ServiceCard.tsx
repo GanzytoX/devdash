@@ -137,8 +137,8 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service, onEdit }) => 
   return (
     <GlassCard hoverEffect={true} className="flex flex-col relative h-full">
       {/* Upper header */}
-      <div className="flex items-start justify-between gap-4 mb-3">
-        <div className="overflow-hidden">
+      <div className="flex items-start justify-between gap-3 mb-3">
+        <div className="overflow-hidden min-w-0">
           <h4 className="text-sm font-semibold text-slate-100 font-sans tracking-tight truncate m-0 mb-1" title={service.name}>
             {service.name}
           </h4>
@@ -146,7 +146,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service, onEdit }) => 
             <span className="text-[9px] font-mono font-bold bg-white/5 border border-white/10 text-brand-blue-300 px-1.5 py-0.5 rounded">
               {service.method}
             </span>
-            <span className="text-[10px] font-mono text-slate-400 truncate max-w-[150px] inline-block" title={service.url}>
+            <span className="text-[10px] font-mono text-slate-400 truncate max-w-[180px] sm:max-w-[150px] inline-block" title={service.url}>
               {service.url.replace(/https?:\/\//, '')}
             </span>
           </div>
@@ -168,7 +168,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service, onEdit }) => 
       )}
 
       {/* Latency & History Row */}
-      <div className="flex items-center justify-between my-4 border-t border-white/5 pt-4">
+      <div className="flex items-center justify-between gap-3 my-4 border-t border-white/5 pt-4">
         <div>
           <div className="text-[10px] font-mono text-slate-400 uppercase tracking-wider">Latencia</div>
           <div className="text-xl font-bold font-mono text-white mt-0.5">

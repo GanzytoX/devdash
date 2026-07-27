@@ -36,12 +36,15 @@ export const TerminalConsole: React.FC = () => {
     { text: '', type: 'info' },
   ]);
 
-  const outputEndRef = useRef<HTMLDivElement>(null);
+  const outputRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Auto scroll to bottom
+  // Keep new output visible without moving the entire dashboard page.
   useEffect(() => {
-    outputEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const output = outputRef.current;
+    if (output) {
+      output.scrollTop = output.scrollHeight;
+    }
   }, [consoleLines, logs]);
 
   const handleCopyOutput = () => {
@@ -170,12 +173,12 @@ export const TerminalConsole: React.FC = () => {
   };
 
   return (
-    <GlassCard className="flex flex-col h-[320px] overflow-hidden p-0 rounded-2xl relative">
+    <GlassCard className="flex flex-col h-[360px] sm:h-[320px] overflow-hidden !p-0 rounded-2xl relative">
       {/* Console Top Header */}
-      <div className="flex items-center justify-between px-6 py-3.5 border-b border-white/5 bg-slate-950/40 shrink-0">
-        <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between gap-3 px-4 sm:px-6 py-3.5 border-b border-white/5 bg-slate-950/40 shrink-0">
+        <div className="flex items-center gap-2 min-w-0">
           <Terminal className="h-4 w-4 text-brand-blue-400" />
-          <span className="text-xs font-mono font-bold tracking-wider text-slate-200 uppercase">
+          <span className="text-[10px] sm:text-xs font-mono font-bold tracking-wider text-slate-200 uppercase leading-tight truncate">
             Consola de Flujos y Diagnóstico de Red
           </span>
         </div>
@@ -201,15 +204,16 @@ export const TerminalConsole: React.FC = () => {
 
       {/* Terminal View Body */}
       <div
-        className="flex-1 overflow-y-auto p-6 font-mono text-xs space-y-1.5 bg-slate-950/40 relative"
+        ref={outputRef}
+        className="flex-1 overflow-y-auto p-4 sm:p-6 font-mono text-[10px] sm:text-xs space-y-1.5 bg-slate-950/40 relative"
         onClick={() => inputRef.current?.focus()}
       >
         {/* Real-time system streams (synced from state) */}
         {logs.map((log) => (
-          <div key={log.id} className="flex items-start gap-2 leading-relaxed">
+          <div key={log.id} className="flex flex-wrap sm:flex-nowrap items-start gap-x-2 gap-y-0.5 leading-relaxed">
             <span className="text-slate-500 font-bold shrink-0">[{log.timestamp}]</span>
             <span className="text-brand-blue-400 font-semibold shrink-0">[{logSourceLabel(log.serviceName)}]</span>
-            <span className={getLogTypeColor(log.type)}>{log.message}</span>
+            <span className={`w-full sm:w-auto break-words ${getLogTypeColor(log.type)}`}>{log.message}</span>
           </div>
         ))}
 
@@ -238,21 +242,21 @@ export const TerminalConsole: React.FC = () => {
           </div>
         ))}
 
-        <div ref={outputEndRef} />
       </div>
 
       {/* Input CLI Bar */}
       <form
         onSubmit={handleCommandSubmit}
-        className="px-6 py-2 bg-slate-950/60 border-t border-white/5 shrink-0 flex items-center gap-1.5 font-mono text-xs"
+        className="px-4 sm:px-6 py-2 bg-slate-950/60 border-t border-white/5 shrink-0 flex items-center gap-1.5 font-mono text-[10px] sm:text-xs"
       >
-        <span className="text-brand-blue-400 font-bold">op@devdash:~#</span>
+        <span className="hidden sm:inline text-brand-blue-400 font-bold">op@devdash:~#</span>
+        <span className="sm:hidden text-brand-blue-400 font-bold">$</span>
         <input
           ref={inputRef}
           type="text"
           value={commandInput}
           onChange={e => setCommandInput(e.target.value)}
-          className="flex-1 bg-transparent border-none text-slate-100 focus:outline-none caret-brand-blue-500 font-mono py-1"
+          className="min-w-0 flex-1 bg-transparent border-none text-slate-100 focus:outline-none caret-brand-blue-500 font-mono py-1"
           placeholder="Escribe un comando (ej. help, ping)..."
           autoComplete="off"
           autoCorrect="off"

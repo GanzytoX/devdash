@@ -34,33 +34,35 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({ onAddClick, onEditCl
   return (
     <div className="space-y-6">
       {/* Filtering Pills Toolbar */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="flex flex-wrap gap-2">
-          {filterTabs.map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setStatusFilter(tab.id)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-sans transition-all duration-200 cursor-pointer flex items-center gap-1.5 border ${
-                statusFilter === tab.id
-                  ? 'bg-brand-blue-600/90 border-brand-blue-500 text-white shadow-md shadow-brand-blue-600/10'
-                  : 'bg-white/5 border-white/5 text-slate-400 hover:text-slate-200 hover:bg-white/10'
-              }`}
-            >
-              <span>{tab.label}</span>
-              <span className={`text-[10px] px-1.5 py-0.5 rounded font-mono ${
-                statusFilter === tab.id ? 'bg-brand-blue-600 text-brand-blue-100' : 'bg-slate-900/50 text-slate-400'
-              }`}>
-                {tab.count}
-              </span>
-            </button>
-          ))}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+        <div className="w-full sm:w-auto overflow-x-auto pb-1">
+          <div className="flex min-w-max gap-2">
+            {filterTabs.map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setStatusFilter(tab.id)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-sans transition-all duration-200 cursor-pointer flex items-center gap-1.5 border ${
+                  statusFilter === tab.id
+                    ? 'bg-brand-blue-600/90 border-brand-blue-500 text-white shadow-md shadow-brand-blue-600/10'
+                    : 'bg-white/5 border-white/5 text-slate-400 hover:text-slate-200 hover:bg-white/10'
+                }`}
+              >
+                <span>{tab.label}</span>
+                <span className={`text-[10px] px-1.5 py-0.5 rounded font-mono ${
+                  statusFilter === tab.id ? 'bg-brand-blue-600 text-brand-blue-100' : 'bg-slate-900/50 text-slate-400'
+                }`}>
+                  {tab.count}
+                </span>
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Add Service Trigger Button */}
         {!isDemo && (
           <button
             onClick={onAddClick}
-            className="glass-btn-primary flex items-center gap-2 px-4 py-2 text-xs font-sans cursor-pointer"
+            className="glass-btn-primary flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-sans cursor-pointer w-full sm:w-auto"
           >
             <Plus className="h-4 w-4" />
             <span>Añadir servicio</span>
@@ -70,7 +72,7 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({ onAddClick, onEditCl
 
       {/* Services Cards Grid Layout */}
       {filteredServices.length === 0 ? (
-        <div className="glass-panel rounded-2xl p-16 text-center border border-white/5">
+        <div className="glass-panel rounded-2xl p-8 sm:p-16 text-center border border-white/5">
           <p className="text-sm text-slate-300 mb-2 font-sans">
             {services.length === 0 ? 'Aún no hay servicios registrados' : 'No hay servicios con este estado'}
           </p>
@@ -83,7 +85,7 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({ onAddClick, onEditCl
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
           {filteredServices.map(service => (
             <ServiceCard
               key={service.id}

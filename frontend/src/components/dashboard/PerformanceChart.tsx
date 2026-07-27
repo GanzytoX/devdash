@@ -85,15 +85,16 @@ export const PerformanceChart: React.FC = () => {
   };
 
   return (
-    <GlassCard className="flex flex-col h-[400px]">
-      <div className="flex items-center justify-between mb-6">
-        <div>
+    <GlassCard className="flex flex-col h-[320px] sm:h-[400px]">
+      <div className="flex items-start justify-between gap-3 mb-4 sm:mb-6">
+        <div className="min-w-0">
           <h3 className="text-sm font-semibold text-slate-100 font-sans tracking-tight m-0">Latencia de Red</h3>
-          <p className="text-[10px] text-slate-400 font-sans mt-0.5">Tiempos de respuesta históricos comparados</p>
+          <p className="text-[9px] sm:text-[10px] text-slate-400 font-sans mt-0.5">Tiempos de respuesta históricos comparados</p>
         </div>
-        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 border border-white/5 text-[10px] font-mono text-slate-400">
+        <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-white/5 border border-white/5 text-[9px] sm:text-[10px] font-mono text-slate-400 shrink-0">
           <Info className="h-3 w-3 text-brand-blue-400" />
-          <span>Frecuencia en tiempo real</span>
+          <span className="sm:hidden">En vivo</span>
+          <span className="hidden sm:inline">Frecuencia en tiempo real</span>
         </div>
       </div>
 
@@ -106,7 +107,7 @@ export const PerformanceChart: React.FC = () => {
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
               data={chartData}
-              margin={{ top: 10, right: 10, left: -25, bottom: 0 }}
+              margin={{ top: 10, right: 4, left: -28, bottom: 0 }}
             >
               <defs>
                 <linearGradient id="colorBrandBlue650" x1="0" y1="0" x2="0" y2="1">

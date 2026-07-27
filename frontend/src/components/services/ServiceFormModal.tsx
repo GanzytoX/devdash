@@ -110,7 +110,7 @@ export const ServiceFormModal: React.FC<ServiceFormModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4">
       {/* Backdrop blur overlay */}
       <div
         className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm"
@@ -118,10 +118,10 @@ export const ServiceFormModal: React.FC<ServiceFormModalProps> = ({
       />
 
       {/* Modal card container */}
-      <div role="dialog" aria-modal="true" aria-labelledby="service-modal-title" className="relative w-full max-w-lg glass-panel rounded-2xl border border-white/10 shadow-2xl overflow-hidden animate-fade-in bg-slate-900/90">
+      <div role="dialog" aria-modal="true" aria-labelledby="service-modal-title" className="relative w-full max-w-lg max-h-[92dvh] glass-panel rounded-t-2xl sm:rounded-2xl border border-white/10 shadow-2xl overflow-y-auto animate-fade-in bg-slate-900/95">
 
         {/* Header */}
-        <div className="px-6 py-4 border-b border-white/5 bg-slate-950/40 flex items-center justify-between">
+        <div className="sticky top-0 z-10 px-4 sm:px-6 py-4 border-b border-white/5 bg-slate-950/95 backdrop-blur-xl flex items-center justify-between">
           <h3 id="service-modal-title" className="text-sm font-semibold text-slate-100 font-sans tracking-tight">
             {editingService ? 'Editar servicio monitoreado' : 'Añadir servicio nuevo'}
           </h3>
@@ -135,7 +135,7 @@ export const ServiceFormModal: React.FC<ServiceFormModalProps> = ({
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4">
 
           {/* Name Field */}
           <div>
@@ -179,7 +179,7 @@ export const ServiceFormModal: React.FC<ServiceFormModalProps> = ({
           </div>
 
           {/* Configuration Grid */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
             {/* Method Select */}
             <div>
@@ -228,18 +228,18 @@ export const ServiceFormModal: React.FC<ServiceFormModalProps> = ({
           {submitError && <p role="alert" className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg p-3">{submitError}</p>}
 
           {/* Action Row */}
-          <div className="flex items-center justify-end gap-3 border-t border-white/5 pt-4 mt-6">
+          <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center sm:justify-end gap-3 border-t border-white/5 pt-4 mt-6 pb-[max(0rem,env(safe-area-inset-bottom))]">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-xs glass-btn font-sans cursor-pointer"
+              className="px-4 py-2.5 text-xs glass-btn font-sans cursor-pointer"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 text-xs glass-btn-primary font-sans cursor-pointer"
+              className="px-4 py-2.5 text-xs glass-btn-primary font-sans cursor-pointer"
             >
               {submitting ? 'Guardando…' : editingService ? 'Guardar cambios' : 'Añadir servicio'}
             </button>
