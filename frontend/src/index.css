@@ -94,6 +94,14 @@ body {
   font-family: var(--font-sans);
   min-height: 100vh;
   overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+}
+
+button,
+a,
+input,
+select {
+  touch-action: manipulation;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -3,7 +3,7 @@ import { Server } from "lucide-react";
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="glass-panel border-x-0 border-b-0 border-t border-white/5 py-6 px-8 mt-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-sans text-slate-400">
+    <footer className="glass-panel border-x-0 border-b-0 border-t border-white/5 py-6 px-4 sm:px-8 mb-24 lg:mb-0 mt-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left text-xs font-sans text-slate-400">
       <div>
         <p>
           © 2026 DevDash. Hecho por{" "}

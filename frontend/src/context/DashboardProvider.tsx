@@ -51,6 +51,9 @@ export const DashboardProvider: React.FC<{ children: ReactNode }> = ({ children 
     const allowedView = role === 'DEMO' && view === 'settings' ? 'dashboard' : view;
     setActiveViewState(allowedView);
     window.history.pushState({}, '', allowedView === 'dashboard' ? '/' : `/${allowedView}`);
+    window.requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    });
   }, [role]);
 
   const applyAuthenticatedUser = useCallback((user: AuthenticatedUser) => {

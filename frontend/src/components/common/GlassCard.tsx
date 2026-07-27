@@ -13,7 +13,7 @@ export const GlassCard: React.FC<GlassCardProps> = ({
   hoverEffect = false,
   onClick,
 }) => {
-  const baseClasses = 'glass-panel p-6 rounded-2xl';
+  const baseClasses = 'glass-panel p-4 sm:p-6 rounded-2xl';
   const hoverClasses = hoverEffect ? 'glass-panel-hover cursor-pointer' : '';
 
   return (

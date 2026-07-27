@@ -42,28 +42,28 @@ export const Header: React.FC = () => {
       case 'analytics':
         return 'Métricas Avanzadas';
       case 'settings':
-        return 'Configuración del Sistema';
+        return 'Ajustes';
       default:
         return 'DevDash';
     }
   };
 
   return (
-    <header className="glass-panel border-x-0 border-t-0 border-b border-white/5 px-4 md:px-8 py-4 flex items-center justify-between sticky top-0 z-10 gap-3">
+    <header className="glass-panel border-x-0 border-t-0 border-b border-white/5 px-3 sm:px-4 md:px-8 py-3 sm:py-4 flex items-center justify-between sticky top-0 z-30 gap-2">
       {/* Title */}
-      <div>
-        <h2 className="text-xl font-semibold text-slate-100 font-sans tracking-tight m-0 flex items-center gap-2">
+      <div className="min-w-0">
+        <h2 className="text-base sm:text-xl font-semibold text-slate-100 font-sans tracking-tight m-0 flex items-center gap-1.5 sm:gap-2 truncate">
           {getTitle()}
           {activeView === 'dashboard' && <Sparkles className="h-4 w-4 text-brand-blue-400" />}
         </h2>
-        <p className="text-xs text-slate-400 font-sans">
+        <p className="hidden sm:block text-xs text-slate-400 font-sans truncate">
           {activeView === 'dashboard' ? 'Resumen de salud y latencia de infraestructura' : 'Administra y examina tus servicios'}
         </p>
       </div>
 
       {/* Action Controls */}
-      <div className="flex items-center gap-4">
-        <a href="/status" target="_blank" rel="noopener noreferrer" aria-label="Abrir página pública" title="Página pública" className="p-2.5 rounded-xl border border-white/5 bg-white/5 text-slate-300 hover:text-white"><ExternalLink className="h-4 w-4" /></a>
+      <div className="flex items-center gap-1.5 sm:gap-4 shrink-0">
+        <a href="/status" target="_blank" rel="noopener noreferrer" aria-label="Abrir página pública" title="Página pública" className="p-2 sm:p-2.5 rounded-xl border border-white/5 bg-white/5 text-slate-300 hover:text-white"><ExternalLink className="h-4 w-4" /></a>
 
 
 
@@ -72,7 +72,8 @@ export const Header: React.FC = () => {
           <button
             onClick={handleNotificationClick}
             aria-label="Notificaciones"
-            className="p-2.5 rounded-xl border border-white/5 bg-white/5 text-slate-300 hover:text-slate-100 hover:bg-white/10 transition-colors relative cursor-pointer"
+            aria-expanded={showNotifications}
+            className="p-2 sm:p-2.5 rounded-xl border border-white/5 bg-white/5 text-slate-300 hover:text-slate-100 hover:bg-white/10 transition-colors relative cursor-pointer"
           >
             <Bell className="h-4 w-4" />
             {unreadCount > 0 && (
@@ -84,7 +85,7 @@ export const Header: React.FC = () => {
 
           {/* Notification Menu */}
           {showNotifications && (
-            <div className="absolute right-0 mt-3 w-80 rounded-2xl overflow-hidden shadow-2xl z-30 animate-fade-in border border-brand-blue-900/40 bg-slate-950/95 backdrop-blur-xl shadow-black/60">
+            <div className="fixed left-3 right-3 top-16 sm:absolute sm:left-auto sm:right-0 sm:top-auto sm:mt-3 sm:w-80 rounded-2xl overflow-hidden shadow-2xl z-40 animate-fade-in border border-brand-blue-900/40 bg-slate-950/95 backdrop-blur-xl shadow-black/60">
               <div className="p-4 border-b border-brand-blue-950/40 bg-slate-900/40 flex items-center justify-between">
                 <span className="text-xs font-semibold text-slate-200 font-sans">Eventos Recientes</span>
                 {unreadCount > 0 && (
@@ -132,11 +133,11 @@ export const Header: React.FC = () => {
         </div>
 
         {/* User profile identifier */}
-        <div className="flex items-center gap-2.5 pl-2 border-l border-white/5">
-          <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-brand-blue-500/20 to-violet-500/20 border border-brand-blue-500/30 flex items-center justify-center font-bold text-brand-blue-300 text-xs font-mono">
+        <div className="flex items-center gap-2.5 sm:pl-2 sm:border-l border-white/5">
+          <div className="hidden sm:flex h-8 w-8 rounded-full bg-gradient-to-tr from-brand-blue-500/20 to-violet-500/20 border border-brand-blue-500/30 items-center justify-center font-bold text-brand-blue-300 text-xs font-mono">
             {(username || 'OP').slice(0, 2).toUpperCase()}
           </div>
-          <div className="hidden md:block">
+          <div className="hidden lg:block">
             <div className="text-xs font-bold text-slate-200 font-sans leading-none">{username || 'Operador'}</div>
             <div
               className="text-[9px] font-mono font-bold uppercase tracking-wider text-brand-blue-400"
@@ -147,7 +148,7 @@ export const Header: React.FC = () => {
           </div>
           <button
             onClick={logout}
-            className="p-1.5 ml-1.5 rounded-lg border border-white/5 hover:border-white/10 text-slate-400 hover:text-red-400 transition-colors cursor-pointer flex items-center justify-center"
+            className="p-2 sm:p-1.5 sm:ml-1.5 rounded-lg border border-white/5 hover:border-white/10 text-slate-400 hover:text-red-400 transition-colors cursor-pointer flex items-center justify-center"
             title="Cerrar sesión"
           >
             <LogOut className="h-3.5 w-3.5" />
