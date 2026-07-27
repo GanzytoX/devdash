@@ -10,10 +10,6 @@ completamente en español.
 [**Abrir DevDash en producción**](https://vps26527.cubepath.net) ·
 [**Consultar el estado público**](https://vps26527.cubepath.net/status)
 
-> [!IMPORTANT]
-> DevDash participa en **Cubethon 2026 Q3** y está desplegado y funcionando en
-> un VPS de **CubePath**.
-
 ## 🚀 ¿Por qué DevDash?
 
 - Centraliza monitoreo, incidentes, diagnóstico y estado público.
