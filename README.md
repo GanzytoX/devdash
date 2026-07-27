@@ -2,7 +2,7 @@
 
 [![Hosted on CubePath](https://img.shields.io/badge/Hosted%20on-CubePath-00C853?style=flat-square&logo=cloud&logoColor=white)](https://vps26527.cubepath.net)
 [![Cubethon 2026 Q3](https://img.shields.io/badge/Cubethon-2026%20Q3-2563EB?style=flat-square&logo=trophy&logoColor=white)](https://github.com/CubePathInc/cubethon-2026-Q3)
-[![Self-hosted](https://img.shields.io/badge/100%25-Self--hosted-7C3AED?style=flat-square&logo=docker&logoColor=white)](#-despliegue)
+[![Live Demo](https://img.shields.io/badge/Demo-En%20producción-7C3AED?style=flat-square&logo=googlechrome&logoColor=white)](https://vps26527.cubepath.net)
 [![License](https://img.shields.io/badge/License-MIT-334155?style=flat-square)](deploy/LICENSE)
 
 DevDash es una plataforma self-hosted para monitorear disponibilidad, latencia,
@@ -22,7 +22,7 @@ completamente en español.
 - Utiliza comprobaciones HTTP, SSL y recursos reales del servidor.
 - Conserva métricas e historial dentro de la infraestructura del usuario.
 - Ofrece una experiencia clara y completamente en español.
-- Se despliega de forma reproducible mediante Docker Compose.
+- Funciona en producción dentro de la infraestructura de CubePath.
 
 ## 📋 Características
 
@@ -37,72 +37,12 @@ completamente en español.
 - Diagnóstico de CPU, memoria, disco y tiempo activo.
 - Terminal interactiva para consultas y comprobaciones manuales.
 
-## 📦 Inicio rápido
+## 🌐 Probar en producción
 
-### Requisitos
-
-- Node.js 22 y pnpm 11.15.1.
-- Docker Engine 24 o superior.
-- Docker Compose v2.
-
-### Desarrollo local
-
-```bash
-cp backend/.env.example backend/.env
-
-cd backend
-pnpm install
-pnpm exec prisma generate
-pnpm exec prisma migrate deploy
-pnpm dev
-```
-
-En otra terminal:
-
-```bash
-cd frontend
-pnpm install
-pnpm dev
-```
-
-- Panel: `http://localhost:5173`
-- Estado público: `http://localhost:5173/status`
-- API: `http://localhost:3001/health`
-
-## ☁️ Despliegue
-
-Configura `backend/.env` con valores de producción:
-
-```env
-NODE_ENV=production
-PORT=3001
-DATABASE_URL=file:/data/devdash.db
-JWT_SECRET=una-clave-aleatoria-de-al-menos-32-caracteres
-ADMIN_USERNAME=admin
-ADMIN_PASSWORD=una-contrasena-segura-de-al-menos-12-caracteres
-DEMO_MODE_ENABLED=true
-DEMO_USERNAME=demo
-CORS_ORIGINS=https://vps26527.cubepath.net
-PUBLIC_APP_URL=https://vps26527.cubepath.net
-TRUST_PROXY=1
-SESSION_TTL_MINUTES=480
-ALLOW_PRIVATE_TARGETS=false
-INSTANCE_NAME=DevDash
-INSTANCE_REGION=CubePath
-```
-
-Construye y arranca la aplicación:
-
-```bash
-cp deploy/.env.example deploy/.env
-docker compose -f deploy/docker-compose.yml up -d --build
-docker compose -f deploy/docker-compose.yml ps
-curl http://localhost/health
-```
-
-> [!WARNING]
-> Genera los secretos directamente en el VPS, utiliza HTTPS y no expongas el
-> puerto 3001 a Internet.
+1. Abre [DevDash en CubePath](https://vps26527.cubepath.net).
+2. Selecciona **Probar demo** para entrar con acceso seguro de solo lectura.
+3. Consulta la [página de estado público](https://vps26527.cubepath.net/status)
+   sin iniciar sesión.
 
 ## 🧱 Arquitectura
 
@@ -130,14 +70,6 @@ flowchart LR
 - Límites de solicitudes e intentos de acceso.
 - Protección SSRF y bloqueo de redes privadas.
 - CSP, HSTS y contenedores ejecutados sin privilegios.
-
-## 🧪 Validación
-
-```bash
-cd backend && pnpm test && pnpm exec prisma validate
-cd ../frontend && pnpm lint && pnpm build
-cd .. && docker compose -f deploy/docker-compose.yml config
-```
 
 ## 🏆 Cubethon 2026 Q3
 
