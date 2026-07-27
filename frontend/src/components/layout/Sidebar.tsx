@@ -22,7 +22,7 @@ export const Sidebar: React.FC = () => {
 
   return (
     <>
-      <aside className="hidden lg:flex w-64 glass-panel border-r border-y-0 border-l-0 flex-col h-screen sticky top-0 shrink-0 z-20">
+      <aside className="hidden lg:flex w-64 glass-panel navigation-surface border-r border-y-0 border-l-0 flex-col h-screen sticky top-0 shrink-0 z-20">
         {/* Brand Header */}
         <div className="p-6 border-b border-white/5 flex items-center gap-3">
           <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-brand-blue-700 to-brand-blue-600 flex items-center justify-center shadow-lg shadow-brand-blue-700/20">
@@ -81,7 +81,7 @@ export const Sidebar: React.FC = () => {
       </aside>
 
       <nav
-        className="lg:hidden fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-50 glass-panel rounded-2xl p-1.5 flex items-stretch justify-around shadow-2xl shadow-black/60"
+        className="lg:hidden fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-50 glass-panel navigation-surface navigation-surface-floating rounded-2xl p-1.5 flex items-stretch justify-around"
         aria-label="Navegación móvil"
       >
         {menuItems.map((item) => {

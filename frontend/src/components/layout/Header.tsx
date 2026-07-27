@@ -49,7 +49,7 @@ export const Header: React.FC = () => {
   };
 
   return (
-    <header className="glass-panel border-x-0 border-t-0 border-b border-white/5 px-3 sm:px-4 md:px-8 py-3 sm:py-4 flex items-center justify-between sticky top-0 z-30 gap-2">
+    <header className="glass-panel navigation-surface border-x-0 border-t-0 border-b px-3 sm:px-4 md:px-8 py-3 sm:py-4 flex items-center justify-between sticky top-0 z-30 gap-2">
       {/* Title */}
       <div className="min-w-0">
         <h2 className="text-base sm:text-xl font-semibold text-slate-100 font-sans tracking-tight m-0 flex items-center gap-1.5 sm:gap-2 truncate">
